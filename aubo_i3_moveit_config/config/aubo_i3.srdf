@@ -9,19 +9,59 @@
     <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
     <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
-    <group name="manipulator">
-        <chain base_link="base_link" tip_link="wrist3_Link" />
+    <group name="finger">
+        <chain base_link="base_link" tip_link="finger" />
     </group>
+    <group name="palm">
+        <chain base_link="base_link" tip_link="palm" />
+    </group>
+    <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
+    <end_effector name="finger" parent_link="ee_link" group="finger" />
+    <end_effector name="palm" parent_link="ee_link" group="palm" />
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
     <virtual_joint name="FixedBase" type="fixed" parent_frame="world" child_link="base_link" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+    <disable_collisions link1="base_link" link2="ee_link" reason="Never" />
+    <disable_collisions link1="base_link" link2="mounter" reason="Adjacent" />
     <disable_collisions link1="base_link" link2="shoulder_Link" reason="Adjacent" />
     <disable_collisions link1="base_link" link2="upperArm_Link" reason="Never" />
+    <disable_collisions link1="base_link" link2="wrist1_Link" reason="Never" />
+    <disable_collisions link1="base_link" link2="wrist3_Link" reason="Never" />
+    <disable_collisions link1="camera_link" link2="ee_link" reason="Adjacent" />
+    <disable_collisions link1="camera_link" link2="eef_link" reason="Never" />
+    <disable_collisions link1="camera_link" link2="finger" reason="Never" />
+    <disable_collisions link1="camera_link" link2="palm" reason="Never" />
+    <disable_collisions link1="camera_link" link2="wrist1_Link" reason="Never" />
+    <disable_collisions link1="camera_link" link2="wrist2_Link" reason="Never" />
+    <disable_collisions link1="camera_link" link2="wrist3_Link" reason="Never" />
+    <disable_collisions link1="ee_link" link2="eef_link" reason="Adjacent" />
+    <disable_collisions link1="ee_link" link2="finger" reason="Adjacent" />
+    <disable_collisions link1="ee_link" link2="foreArm_Link" reason="Never" />
+    <disable_collisions link1="ee_link" link2="palm" reason="Adjacent" />
+    <disable_collisions link1="ee_link" link2="shoulder_Link" reason="Never" />
+    <disable_collisions link1="ee_link" link2="wrist1_Link" reason="Never" />
+    <disable_collisions link1="ee_link" link2="wrist2_Link" reason="Never" />
+    <disable_collisions link1="ee_link" link2="wrist3_Link" reason="Adjacent" />
+    <disable_collisions link1="eef_link" link2="finger" reason="Never" />
+    <disable_collisions link1="eef_link" link2="palm" reason="Never" />
+    <disable_collisions link1="eef_link" link2="wrist1_Link" reason="Never" />
+    <disable_collisions link1="eef_link" link2="wrist2_Link" reason="Never" />
+    <disable_collisions link1="eef_link" link2="wrist3_Link" reason="Default" />
+    <disable_collisions link1="finger" link2="palm" reason="Never" />
+    <disable_collisions link1="finger" link2="wrist1_Link" reason="Never" />
+    <disable_collisions link1="finger" link2="wrist2_Link" reason="Never" />
+    <disable_collisions link1="finger" link2="wrist3_Link" reason="Never" />
     <disable_collisions link1="foreArm_Link" link2="upperArm_Link" reason="Adjacent" />
     <disable_collisions link1="foreArm_Link" link2="wrist1_Link" reason="Adjacent" />
     <disable_collisions link1="foreArm_Link" link2="wrist2_Link" reason="Never" />
+    <disable_collisions link1="foreArm_Link" link2="wrist3_Link" reason="Never" />
+    <disable_collisions link1="mounter" link2="shoulder_Link" reason="Never" />
+    <disable_collisions link1="palm" link2="wrist1_Link" reason="Never" />
+    <disable_collisions link1="palm" link2="wrist2_Link" reason="Never" />
+    <disable_collisions link1="palm" link2="wrist3_Link" reason="Never" />
     <disable_collisions link1="shoulder_Link" link2="upperArm_Link" reason="Adjacent" />
     <disable_collisions link1="shoulder_Link" link2="wrist1_Link" reason="Never" />
+    <disable_collisions link1="shoulder_Link" link2="wrist3_Link" reason="Never" />
     <disable_collisions link1="wrist1_Link" link2="wrist2_Link" reason="Adjacent" />
     <disable_collisions link1="wrist1_Link" link2="wrist3_Link" reason="Never" />
     <disable_collisions link1="wrist2_Link" link2="wrist3_Link" reason="Adjacent" />

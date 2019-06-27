@@ -221,9 +221,34 @@
   <link name="world" />
 
   <joint name="world_joint" type="fixed">
-    <parent link="world" />
-    <child link = "base_link" />
-    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+    <parent link="world"/>
+    <child link="mounter"/>
+    <origin xyz="0.0 -0.658 0.0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="mounter">
+    <visual>
+      <geometry>
+        <mesh filename="package://aubo_description/meshes/aubo_i3/collision/mounter_front_new.stl"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://aubo_description/meshes/aubo_i3/collision/mounter_front_new.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.00003" iyy="0.00003" izz="0.00003" ixy="0.0" ixz="0.0" iyz="0.0"/>
+    </inertial>
+  </link>
+  <joint name="mounter_joint" type="fixed">
+    <parent link="mounter"/>
+    <child link="base_link"/>
+    <origin xyz="0.0 0 0.0" rpy="3.14159 0.0 5.49780"/>
   </joint>
 
 </robot>
