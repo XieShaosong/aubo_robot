@@ -30,13 +30,17 @@
  */
 
 #include "aubo_driver/aubo_driver.h"
+#define MAX_JOINT_ACC 30.0/180.0*M_PI
+#define MAX_JOINT_VEL 15.0/180.0*M_PI
+#define MAX_END_ACC    1
+#define MAX_END_VEL    0.5
 
 namespace aubo_driver {
 
 std::string AuboDriver::joint_name_[ARM_DOF] = {"shoulder_joint","upperArm_joint","foreArm_joint","wrist1_joint","wrist2_joint","wrist3_joint"};
 
 AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_recieved_(false),data_count_(0),real_robot_exist_(false),emergency_stopped_(false),protective_stopped_(false),normal_stopped_(false),
-    controller_connected_flag_(false),start_move_(false),control_mode_ (aubo_driver::SendTargetGoal),rib_buffer_size_(0),jti(ARM_DOF),jto(ARM_DOF),collision_class_(8)
+    controller_connected_flag_(false),start_move_(false),control_mode_ (aubo_driver::SendTargetGoal),rib_buffer_size_(0),jti(ARM_DOF),jto(ARM_DOF),collision_class_(3)
 {
     axis_number_ = 6 + num;
     /** initialize the parameters **/
@@ -84,7 +88,7 @@ AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_
     teach_subs_ = nh_.subscribe("teach_cmd", 10, &AuboDriver::teachCallback,this);
     moveAPI_subs_ = nh_.subscribe("moveAPI_cmd", 10, &AuboDriver::AuboAPICallback, this);
     controller_switch_sub_ = nh_.subscribe("/aubo_driver/controller_switch", 10, &AuboDriver::controllerSwitchCallback, this);
-    tcp_message_subs_ = nh_.subscribe("/aubo_driver/set_tcp", 10, &AuboDriver::setTcpCallback, this);
+    arm_cmd_subs_ = nh_.subscribe("/aubo_driver/arm_cmd", 10, &AuboDriver::armCmdCallback, this);
 }
 
 AuboDriver::~AuboDriver()
@@ -475,37 +479,135 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
     else if (msg->data == "stop")
     {
         int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-        ret = robot_send_service_.rootServiceRobotMoveControl(aubo_robot_namespace::RobotMoveControlCommand::RobotMoveStop);
+        ret = robot_send_service_.robotMoveFastStop();
         if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
-            ROS_INFO("unlock protective stop sucess.");
+            ROS_INFO("Robot move fast stop sucess.");
         else
-            ROS_ERROR("unlock protective stop failed.");
+            ROS_ERROR("Robot move fast stop failed.");
     }
 }
 
-void AuboDriver::setTcpCallback(const aubo_msgs::DoubleArray::ConstPtr &msg)
+void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
 {
-    aubo_robot_namespace::ToolKinematicsParam tcp;
-    aubo_robot_namespace::Rpy rpy;
-    rpy.rx = msg->values[3];
-    rpy.ry = msg->values[4];
-    rpy.rz = msg->values[5];
-    robot_receive_service_.RPYToQuaternion(rpy, tcp.toolInEndOrientation);
-    tcp.toolInEndPosition.x = msg->values[0];
-    tcp.toolInEndPosition.y = msg->values[1];
-    tcp.toolInEndPosition.z = msg->values[2];
-    int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-    ret = robot_receive_service_.robotServiceSetToolKinematicsParam(tcp);
-    if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
-        ROS_INFO("unlock protective stop sucess.");
-    else
-        ROS_ERROR("unlock protective stop failed.");
+    if (msg->type == "setTcp")
+    {
+        aubo_robot_namespace::ToolKinematicsParam tcp;
+        aubo_robot_namespace::Rpy rpy;
+        rpy.rx = msg->values[3];
+        rpy.ry = msg->values[4];
+        rpy.rz = msg->values[5];
+        robot_receive_service_.RPYToQuaternion(rpy, tcp.toolInEndOrientation);
+        tcp.toolInEndPosition.x = msg->values[0];
+        tcp.toolInEndPosition.y = msg->values[1];
+        tcp.toolInEndPosition.z = msg->values[2];
+        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
+        ret = robot_send_service_.robotServiceSetToolKinematicsParam(tcp);
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("set tcp sucess.");
+        else
+            ROS_ERROR("set tcp failed. errCode: %d", ret);
+    }
+    else if (msg->type == "movej")
+    {
+        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
+        ret = robot_send_service_.robotMoveFastStop();
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("Robot move fast stop successfully");
+        else
+        {
+            ROS_ERROR("Failed to robot movet fast stop");
+            return;
+        }
+        ret = robot_send_service_.robotServiceLeaveTcp2CanbusMode();
+        if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
+        {
+            ROS_INFO("Switches to robot-controller successfully");
+            control_option_ = aubo_driver::AuboAPI;
+        }
+        else
+            ROS_ERROR("Failed to switch to robot-controller");
+
+        robot_send_service_.robotServiceInitGlobalMoveProfile();
+        
+        aubo_robot_namespace::JointVelcAccParam jointMaxAcc;
+        aubo_robot_namespace::JointVelcAccParam jointMaxVelc;
+
+        for(int i = 0; i < 6; i++)
+        {
+            jointMaxAcc.jointPara[i] = MAX_JOINT_ACC;
+            jointMaxVelc.jointPara[i] = MAX_JOINT_VEL;
+        }
+
+        robot_send_service_.robotServiceSetGlobalMoveJointMaxAcc(jointMaxAcc);
+        robot_send_service_.robotServiceSetGlobalMoveJointMaxVelc(jointMaxVelc);
+
+        double joint[6];
+        for (int i = 0; i < 6; i++)
+        {
+            joint[i] = msg->values[i];
+        }
+        ret = robot_send_service_.robotServiceJointMove(joint, false);
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("moveJ sucess.");
+        else
+            ROS_ERROR("moveJ failed. errCode: %d", ret);
+        
+        ret = robot_send_service_.robotServiceEnterTcp2CanbusMode();
+        if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
+        {
+            ROS_INFO("Switches to ros-controller successfully");
+            control_option_ = aubo_driver::RosMoveIt;
+        }
+        else
+            ROS_ERROR("Failed to switch to ros-controller, make sure there is no other controller which is controlling the robot to move.");
+    }
+    else if (msg->type == "moveUp")
+    {
+        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
+        ret = robot_send_service_.robotServiceLeaveTcp2CanbusMode();
+        if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
+        {
+            ROS_INFO("Switches to robot-controller successfully");
+            control_option_ = aubo_driver::AuboAPI;
+        }
+        else
+            ROS_ERROR("Failed to switch to robot-controller");
+
+        robot_send_service_.robotServiceInitGlobalMoveProfile();
+        robot_send_service_.robotServiceSetGlobalMoveEndMaxLineAcc(MAX_END_ACC);
+        robot_send_service_.robotServiceSetGlobalMoveEndMaxAngleAcc(MAX_END_ACC);
+        robot_send_service_.robotServiceSetGlobalMoveEndMaxLineVelc(MAX_END_VEL);
+        robot_send_service_.robotServiceSetGlobalMoveEndMaxAngleVelc(MAX_END_VEL);
+
+        aubo_robot_namespace::wayPoint_S waypoint;
+        waypoint.cartPos.position.x = msg->pose.position.x;
+        waypoint.cartPos.position.y = msg->pose.position.y;
+        waypoint.cartPos.position.z = msg->pose.position.z;
+        waypoint.orientation.x = msg->pose.orientation.x;
+        waypoint.orientation.y = msg->pose.orientation.y;
+        waypoint.orientation.z = msg->pose.orientation.z;
+        waypoint.orientation.w = msg->pose.orientation.w;
+        ret = robot_send_service_.robotServiceLineMove(waypoint, false);
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("moveUp sucess.");
+        else
+            ROS_ERROR("moveUp failed. %d", ret);
+
+        ret = robot_send_service_.robotServiceEnterTcp2CanbusMode();
+        if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
+        {
+            ROS_INFO("Switches to ros-controller successfully");
+            control_option_ = aubo_driver::RosMoveIt;
+        }
+        else
+            ROS_ERROR("Failed to switch to ros-controller, make sure there is no other controller which is controlling the robot to move.");
+    }
 }
 
 void AuboDriver::updateControlStatus()
 {
     data_count_++;
-    /** The max delay time is MAXALLOWEDDELAY * robot_driver.UPDATE_RATE_ = 50 * 0.002 = 0.1s **/
+    /** The max delay time is MAXALLOWEDDELAY * UPDATE_RATE_ = 50 * 0.002 = 0.1s **/
     if(data_count_ == MAXALLOWEDDELAY)
     {
         data_count_ = 0;
