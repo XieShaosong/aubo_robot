@@ -84,7 +84,7 @@
     <parent link="base_link" />
     <child link="shoulder_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.05" upper="3.05" effort="0" velocity="0" />
+    <limit lower="-3.1416" upper="3.1416" effort="0" velocity="0" />
   </joint>
 
   <link name="upperArm_Link">
@@ -115,7 +115,7 @@
     <parent link="shoulder_Link" />
     <child link="upperArm_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.05" upper="3.05" effort="0" velocity="0" />
+    <limit lower="-3.1416" upper="3.1416" effort="0" velocity="0" />
   </joint>
 
   <link name="foreArm_Link">
@@ -146,7 +146,7 @@
     <parent link="upperArm_Link" />
     <child link="foreArm_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.05" upper="3.05" effort="0" velocity="0" />
+    <limit lower="-3.1416" upper="3.1416" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist1_Link">
@@ -177,7 +177,7 @@
     <parent link="foreArm_Link" />
     <child link="wrist1_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.05" upper="3.05" effort="0" velocity="0" />
+    <limit lower="-3.1416" upper="3.1416" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist2_Link">
@@ -208,7 +208,7 @@
     <parent link="wrist1_Link" />
     <child  link="wrist2_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.05" upper="3.05" effort="0" velocity="0" />
+    <limit lower="-3.1416" upper="3.1416" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist3_Link">
@@ -239,7 +239,7 @@
     <parent link="wrist2_Link" />
     <child link="wrist3_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.05" upper="3.05" effort="0" velocity="0" />
+    <limit lower="-3.1416" upper="3.1416" effort="0" velocity="0" />
   </joint>
 
   <!-- modified line here -->
@@ -286,7 +286,7 @@
     </visual>
   </link>
   <joint name="eelink_finger_joint" type="fixed">
-    <origin xyz="0.181500 -0.071350 0.028340" rpy="0.59341 0 0"/>
+    <origin xyz="0.189280 -0.071350 0.028340" rpy="-0.785398 0 0"/>
     <parent link="ee_link"/>
     <child link="finger"/>
   </joint>
@@ -327,7 +327,8 @@
   <joint name="eef_joint" type="fixed">
     <parent link="ee_link" />
     <child link = "eef_link" />
-    <origin xyz="0.0 0.0 0.0" rpy="0 0 0.0" />
+    <!-- <origin xyz="0.0 0.0 0.0" rpy="-0.610865 0 0.0" /> -->
+    <origin xyz="0.0 0.0 0.0" rpy="-2.094395 0 0.0" />
   </joint>
 
 </robot>

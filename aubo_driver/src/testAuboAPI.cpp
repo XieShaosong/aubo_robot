@@ -44,8 +44,8 @@ using namespace aubo_driver;
 
 #define MAX_JOINT_ACC 30.0/180.0*M_PI  //unit rad/s^2
 #define MAX_JOINT_VEL 15.0/180.0*M_PI   //unit rad/s
-#define MAX_END_ACC    1                // unit m/s^2
-#define MAX_END_VEL    0.5                // unit m/s
+#define MAX_END_ACC    0.5                // unit m/s^2
+#define MAX_END_VEL    0.25                // unit m/s
 
 double zero_poeition[ARM_DOF] = {M_PI*(-45.0)/180.0, M_PI*(-90.0)/180.0, M_PI*(80.0)/180.0, M_PI*(70.0)/180.0, M_PI*(-90.0)/180.0, M_PI*(-34.0)/180.0};
 double initial_poeition[ARM_DOF] = {0.0/180.0*M_PI,  0.0/180.0*M_PI,  90.0/180.0*M_PI, 0.0/180.0*M_PI, 90.0/180.0*M_PI, 0.0/180.0*M_PI};

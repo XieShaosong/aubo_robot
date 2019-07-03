@@ -32,8 +32,8 @@
 #include "aubo_driver/aubo_driver.h"
 #define MAX_JOINT_ACC 30.0/180.0*M_PI
 #define MAX_JOINT_VEL 15.0/180.0*M_PI
-#define MAX_END_ACC    1
-#define MAX_END_VEL    0.5
+#define MAX_END_ACC    0.5
+#define MAX_END_VEL    0.25
 
 namespace aubo_driver {
 
@@ -75,7 +75,7 @@ AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_
     io_pub_ = nh_.advertise<aubo_msgs::IOState>("/aubo_driver/io_states", 10);
     rib_pub_ = nh_.advertise<std_msgs::Int32MultiArray>("/aubo_driver/rib_status", 100);
     joint_msgs_pub_ = nh_.advertise<aubo_msgs::JointMsg>("/aubo_driver/joint_msgs", 100);
-    waypoint_pub_ = nh_.advertise<aubo_msgs::WayPoint>("/aubo_driver/waypoint", 100);
+    waypoint_pub_ = nh_.advertise<aubo_msgs::WayPoint>("/aubo_driver/tool_vector", 100);
 
     io_srv_ = nh_.advertiseService("/aubo_driver/set_io",&AuboDriver::setIO, this);
     ik_srv_ = nh_.advertiseService("/aubo_driver/get_ik",&AuboDriver::getIK, this);
@@ -144,6 +144,7 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
                 joint_msg_.target_current.clear();
                 joint_msg_.actual_position.clear();
                 joint_msg_.target_position.clear();
+                joint_msg_.Header.stamp = ros::Time::now();
                 for (int i = 0; i < 6; i++)
                 {
                     joint_msg_.actual_current.push_back(rs.joint_status_[i].jointCurrentI);
@@ -153,6 +154,7 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
                 }
 
                 // publish waypoint
+                wayPoint_.header.stamp = ros::Time::now();
                 wayPoint_.actual_position.x = rs.wayPoint_.cartPos.position.x;
                 wayPoint_.actual_position.y = rs.wayPoint_.cartPos.position.y;
                 wayPoint_.actual_position.z = rs.wayPoint_.cartPos.position.z;
@@ -579,15 +581,14 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         robot_send_service_.robotServiceSetGlobalMoveEndMaxLineVelc(MAX_END_VEL);
         robot_send_service_.robotServiceSetGlobalMoveEndMaxAngleVelc(MAX_END_VEL);
 
-        aubo_robot_namespace::wayPoint_S waypoint;
-        waypoint.cartPos.position.x = msg->pose.position.x;
-        waypoint.cartPos.position.y = msg->pose.position.y;
-        waypoint.cartPos.position.z = msg->pose.position.z;
-        waypoint.orientation.x = msg->pose.orientation.x;
-        waypoint.orientation.y = msg->pose.orientation.y;
-        waypoint.orientation.z = msg->pose.orientation.z;
-        waypoint.orientation.w = msg->pose.orientation.w;
-        ret = robot_send_service_.robotServiceLineMove(waypoint, false);
+        aubo_robot_namespace::CoordCalibrateByJointAngleAndTool userCoord;
+        userCoord.coordType = aubo_robot_namespace::coordinate_refer::BaseCoordinate;
+        aubo_robot_namespace::MoveRelative moveRelative;
+        moveRelative.ena = true;
+        moveRelative.relativePosition[0] = 0;
+        moveRelative.relativePosition[1] = 0;
+        moveRelative.relativePosition[2] = msg->values[0];
+        ret = robot_send_service_.robotMoveLineToTargetPositionByRelative(userCoord, moveRelative, false);
         if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
             ROS_INFO("moveUp sucess.");
         else
@@ -703,7 +704,7 @@ bool AuboDriver::connectToRobotController()
 
     std::string s;
     ros::param::get("/aubo_driver/server_host", s); //The server_host should be corresponding to the robot controller setup.
-    server_host_ = (s=="")? "127.0.0.1" : s;
+    server_host_ = (s=="")? "192.168.0.2" : s;
     std::cout<<"server_host:"<<server_host_<<std::endl;
 
     /** log in ***/

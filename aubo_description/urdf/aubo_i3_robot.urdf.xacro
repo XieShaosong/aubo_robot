@@ -9,14 +9,22 @@
   <xacro:include filename="$(find aubo_description)/urdf/aubo_i3.urdf.xacro" />
 
   <!-- arm -->
-  <xacro:aubo_i5L_robot prefix="" joint_limited="false"/>
+  <xacro:aubo_i3_robot prefix="" joint_limited="false"/>
 
   <link name="world" />
 
   <joint name="world_joint" type="fixed">
     <parent link="world" />
+    <child link = "mounter" />
+     <origin xyz="0.0 -0.658 0.0" rpy="0 0 0.02618" />
+  </joint>
+
+  <link name="mounter" />
+
+  <joint name="mounter_joint" type="fixed">
+    <parent link="mounter" />
     <child link = "base_link" />
-    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+    <origin xyz="0.0 0 0.0" rpy="3.14159 0.0 2.35621"/>
   </joint>
 
 </robot>
