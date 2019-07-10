@@ -62,7 +62,7 @@ JointTrajectoryAction::JointTrajectoryAction(std::string controller_name) :
 
   pub_trajectory_command_ = node_.advertise<trajectory_msgs::JointTrajectory>("joint_path_command", 100);
   sub_trajectory_state_ = node_.subscribe("feedback_states", 1, &JointTrajectoryAction::controllerStateCB, this);
-  sub_robot_status_ = node_.subscribe("robot_status", 1, &JointTrajectoryAction::robotStatusCB, this);
+  sub_robot_status_ = node_.subscribe("/aubo_driver/robot_status", 1, &JointTrajectoryAction::robotStatusCB, this);
   trajectory_execution_subs_ = node_.subscribe("trajectory_execution_event", 1, &JointTrajectoryAction::trajectoryExecutionCallback,this);
 
 

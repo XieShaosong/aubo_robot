@@ -71,7 +71,7 @@ AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_
     joint_states_pub_ = nh_.advertise<sensor_msgs::JointState>("joint_states", 300);
     joint_feedback_pub_ = nh_.advertise<control_msgs::FollowJointTrajectoryFeedback>("feedback_states", 100);
     joint_target_pub_ = nh_.advertise<std_msgs::Float32MultiArray>("/aubo_driver/real_pose", 50);
-    robot_status_pub_ = nh_.advertise<industrial_msgs::RobotStatus>("robot_status", 100);
+    robot_status_pub_ = nh_.advertise<industrial_msgs::RobotStatus>("/aubo_driver/robot_status", 100);
     io_pub_ = nh_.advertise<aubo_msgs::IOState>("/aubo_driver/io_states", 10);
     rib_pub_ = nh_.advertise<std_msgs::Int32MultiArray>("/aubo_driver/rib_status", 100);
     joint_msgs_pub_ = nh_.advertise<aubo_msgs::JointMsg>("/aubo_driver/joint_msgs", 100);
@@ -144,6 +144,7 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
                 joint_msg_.target_current.clear();
                 joint_msg_.actual_position.clear();
                 joint_msg_.target_position.clear();
+                double target_position[6];
                 joint_msg_.Header.stamp = ros::Time::now();
                 for (int i = 0; i < 6; i++)
                 {
@@ -151,7 +152,9 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
                     joint_msg_.target_current.push_back(rs.joint_status_[i].jointTagCurrentI);
                     joint_msg_.actual_position.push_back(rs.joint_status_[i].jointPosJ);
                     joint_msg_.target_position.push_back(rs.joint_status_[i].jointTagPosJ);
+                    target_position[i] = rs.joint_status_[i].jointTagPosJ;
                 }
+
 
                 // publish waypoint
                 wayPoint_.header.stamp = ros::Time::now();
@@ -161,7 +164,16 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
                 wayPoint_.actual_rotation.x = rpy.rx;
                 wayPoint_.actual_rotation.y = rpy.ry;
                 wayPoint_.actual_rotation.z = rpy.rz;
-
+                aubo_robot_namespace::wayPoint_S target_waypoint;
+                robot_receive_service_.robotServiceRobotFk(target_position, 6, target_waypoint);
+                aubo_robot_namespace::Rpy target_rpy;
+                robot_receive_service_.quaternionToRPY(target_waypoint.orientation, target_rpy);
+                wayPoint_.target_position.x = target_waypoint.cartPos.position.x;
+                wayPoint_.target_position.y = target_waypoint.cartPos.position.y;
+                wayPoint_.target_position.z = target_waypoint.cartPos.position.z;
+                wayPoint_.target_rotation.x = target_rpy.rx;
+                wayPoint_.target_rotation.y = target_rpy.ry;
+                wayPoint_.target_rotation.z = target_rpy.rz;
             }
         }
         else if(ret == aubo_robot_namespace::ErrCode_SocketDisconnect)
@@ -486,6 +498,15 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
             ROS_INFO("Robot move fast stop sucess.");
         else
             ROS_ERROR("Robot move fast stop failed.");
+    }
+    else if (msg->data == "OrpeOpen")
+    {
+        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
+        ret = robot_send_service_.rootServiceRobotControl(aubo_robot_namespace::RobotControlCommand::OrpeOpen);
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("Robot OrpeOpen sucess.");
+        else
+            ROS_ERROR("Robot OrpeOpen failed.");
     }
 }
 
