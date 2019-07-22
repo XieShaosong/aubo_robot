@@ -523,14 +523,6 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
     else if (msg->type == "movej")
     {
         int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-        ret = robot_send_service_.robotMoveFastStop();
-        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
-            ROS_INFO("Robot move fast stop successfully");
-        else
-        {
-            ROS_ERROR("Failed to robot movet fast stop");
-            return;
-        }
         ret = robot_send_service_.robotServiceLeaveTcp2CanbusMode();
         if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
         {
