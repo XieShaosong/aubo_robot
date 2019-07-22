@@ -84,7 +84,7 @@
     <parent link="base_link" />
     <child link="shoulder_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.1416" upper="3.1416" effort="0" velocity="0" />
+    <limit lower="-3.1415926" upper="3.1415926" effort="0" velocity="0" />
   </joint>
 
   <link name="upperArm_Link">
@@ -115,7 +115,7 @@
     <parent link="shoulder_Link" />
     <child link="upperArm_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.1416" upper="3.1416" effort="0" velocity="0" />
+    <limit lower="-2.094395102" upper="2.094395102" effort="0" velocity="0" />
   </joint>
 
   <link name="foreArm_Link">
@@ -146,7 +146,7 @@
     <parent link="upperArm_Link" />
     <child link="foreArm_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.1416" upper="3.1416" effort="0" velocity="0" />
+    <limit lower="-2.094395102" upper="3.1415926" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist1_Link">
@@ -177,7 +177,7 @@
     <parent link="foreArm_Link" />
     <child link="wrist1_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.1416" upper="3.1416" effort="0" velocity="0" />
+    <limit lower="-1.396263402" upper="1.396263402" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist2_Link">
@@ -239,7 +239,8 @@
     <parent link="wrist2_Link" />
     <child link="wrist3_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.1416" upper="3.1416" effort="0" velocity="0" />
+<!--    <limit lower="-1.570796327" upper="3.1415926" effort="0" velocity="0" />-->
+    <limit lower="-3.1415926" upper="3.1415926" effort="0" velocity="0" />
   </joint>
 
   <!-- modified line here -->
@@ -272,7 +273,7 @@
     </visual>
   </link>
   <joint name="vision_joint" type="fixed">
-    <origin xyz="0.14337 -0.03420 0.00467" rpy="-0.905282 0.248103 -0.307558"/>
+    <origin xyz="0.192777 -0.038643 -0.000208" rpy="-1.039315 0.180144 -0.295751"/>
     <parent link="ee_link"/>
     <child link="camera_link"/>
   </joint>
@@ -286,7 +287,7 @@
     </visual>
   </link>
   <joint name="eelink_finger_joint" type="fixed">
-    <origin xyz="0.189280 -0.071350 0.028340" rpy="-0.785398 0 0"/>
+    <origin xyz="0.227500 0.028080 0.071870" rpy="0 0 0"/>
     <parent link="ee_link"/>
     <child link="finger"/>
   </joint>
@@ -300,7 +301,7 @@
     </visual>
   </link>
   <joint name="eelink_palm_joint" type="fixed">
-    <origin xyz="0.21175 0.003316 0.00216" rpy="0.59341 0 0"/>
+    <origin xyz="0.211430 0.059050 -0.005870" rpy="-0.977384381 0 0"/>
     <parent link="ee_link"/>
     <child link="palm"/>
   </joint>

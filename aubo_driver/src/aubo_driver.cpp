@@ -155,7 +155,6 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
                     target_position[i] = rs.joint_status_[i].jointTagPosJ;
                 }
 
-
                 // publish waypoint
                 wayPoint_.header.stamp = ros::Time::now();
                 wayPoint_.actual_position.x = rs.wayPoint_.cartPos.position.x;
@@ -498,15 +497,6 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
             ROS_INFO("Robot move fast stop sucess.");
         else
             ROS_ERROR("Robot move fast stop failed.");
-    }
-    else if (msg->data == "OrpeOpen")
-    {
-        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-        ret = robot_send_service_.rootServiceRobotControl(aubo_robot_namespace::RobotControlCommand::OrpeOpen);
-        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
-            ROS_INFO("Robot OrpeOpen sucess.");
-        else
-            ROS_ERROR("Robot OrpeOpen failed.");
     }
 }
 
