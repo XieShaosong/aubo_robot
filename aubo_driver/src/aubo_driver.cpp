@@ -523,6 +523,12 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
     else if (msg->type == "movej")
     {
         int ret = aubo_robot_namespace::InterfaceCallSuccCode;
+        ret = robot_send_service_.robotMoveFastStop();
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("Robot move fast stop sucess.");
+        else
+            ROS_ERROR("Robot move fast stop failed.");
+
         ret = robot_send_service_.robotServiceLeaveTcp2CanbusMode();
         if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
         {
@@ -569,6 +575,12 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
     else if (msg->type == "moveUp")
     {
         int ret = aubo_robot_namespace::InterfaceCallSuccCode;
+        ret = robot_send_service_.robotMoveFastStop();
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("Robot move fast stop sucess.");
+        else
+            ROS_ERROR("Robot move fast stop failed.");
+
         ret = robot_send_service_.robotServiceLeaveTcp2CanbusMode();
         if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
         {
