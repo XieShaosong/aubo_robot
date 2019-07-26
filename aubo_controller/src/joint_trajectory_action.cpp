@@ -62,7 +62,7 @@ JointTrajectoryAction::JointTrajectoryAction(std::string controller_name) :
 
   pub_trajectory_command_ = node_.advertise<trajectory_msgs::JointTrajectory>("joint_path_command", 100);
   sub_trajectory_state_ = node_.subscribe("feedback_states", 1, &JointTrajectoryAction::controllerStateCB, this);
-  sub_robot_status_ = node_.subscribe("/aubo_driver/robot_status", 1, &JointTrajectoryAction::robotStatusCB, this);
+  sub_robot_status_ = node_.subscribe("robot_status", 1, &JointTrajectoryAction::robotStatusCB, this);
   trajectory_execution_subs_ = node_.subscribe("trajectory_execution_event", 1, &JointTrajectoryAction::trajectoryExecutionCallback,this);
 
 
@@ -80,6 +80,7 @@ void JointTrajectoryAction::trajectoryExecutionCallback(const std_msgs::String::
     {
         ROS_INFO("trajectory execution status: stop1");
         // Marks the current goal as canceled.
+
         active_goal_.setAborted();
         has_active_goal_ = false;
     }
@@ -98,7 +99,7 @@ void JointTrajectoryAction::robotStatusCB(const industrial_msgs::RobotStatusCons
       }
       else
       {
-          ROS_INFO("Robot is protective stopped!");
+           ROS_INFO("Robot is protective stopped!");
       }
       if(has_active_goal_)
       {
@@ -211,6 +212,7 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle & gh)
 
 void JointTrajectoryAction::cancelCB(JointTractoryActionServer::GoalHandle & gh)
 {
+
   ROS_DEBUG("Received action cancel request");
   if (active_goal_ == gh)
   {
@@ -305,7 +307,7 @@ void JointTrajectoryAction::abortGoal()
 {
   // Stops the controller.
   trajectory_msgs::JointTrajectory empty;
-  pub_trajectory_command_.publish(empty);
+//  pub_trajectory_command_.publish(empty);
 
   // Marks the current goal as aborted.
   active_goal_.setAborted();
@@ -434,6 +436,14 @@ bool JointTrajectoryAction::withinGoalConstraints(const control_msgs::FollowJoin
   else
   {
     int last_point = traj.points.size() - 1;
+
+//    std::cout<<"last_trajectory_state"<<last_trajectory_state_->joint_names[0]<<","<<last_trajectory_state_->joint_names[1]<<","<<last_trajectory_state_->joint_names[2]
+//                                                    <<","<<last_trajectory_state_->joint_names[3]<<","<<last_trajectory_state_->joint_names[4]
+//                                                    <<","<<last_trajectory_state_->joint_names[5]<<","<<last_trajectory_state_->joint_names[6]<<std::endl;
+//    std::cout<<"traj.joint_names"<<traj.joint_names[0]<<","<<traj.joint_names[1]<<","<<traj.joint_names[2]
+//                                                    <<","<<traj.joint_names[3]<<","<<traj.joint_names[4]
+//                                                    <<","<<traj.joint_names[5]<<","<<traj.joint_names[6]<<std::endl;
+
 
 //    ROS_INFO("laset position,%f,%f,%f,%f,%f,%f,%f",last_trajectory_state_->actual.positions[0],last_trajectory_state_->actual.positions[1],last_trajectory_state_->actual.positions[2],last_trajectory_state_->actual.positions[3],
 //            last_trajectory_state_->actual.positions[4],last_trajectory_state_->actual.positions[5],last_trajectory_state_->actual.positions[6]);
