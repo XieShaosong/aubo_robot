@@ -79,6 +79,9 @@ AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_
     ik_srv_ = nh_.advertiseService("/aubo_driver/get_ik",&AuboDriver::getIK, this);
     fk_srv_ = nh_.advertiseService("/aubo_driver/get_fk",&AuboDriver::getFK, this);
 
+    joint_msgs_pub_ = nh_.advertise<aubo_msgs::JointMsg>("/aubo_driver/joint_msgs", 100);
+    waypoint_pub_ = nh_.advertise<aubo_msgs::WayPoint>("/aubo_driver/tool_vector", 100);
+
     /** subscribe topics **/
     trajectory_execution_subs_ = nh_.subscribe("trajectory_execution_event", 10, &AuboDriver::trajectoryExecutionCallback,this);
     robot_control_subs_ = nh_.subscribe("robot_control", 10, &AuboDriver::robotControlCallback,this);
