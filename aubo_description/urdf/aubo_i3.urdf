@@ -115,7 +115,7 @@
     <parent link="shoulder_Link" />
     <child link="upperArm_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-2.094395102" upper="2.094395102" effort="0" velocity="0" />
+    <limit lower="-2.0944" upper="2.0944" effort="0" velocity="0" />
   </joint>
 
   <link name="foreArm_Link">
@@ -146,7 +146,7 @@
     <parent link="upperArm_Link" />
     <child link="foreArm_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-2.094395102" upper="3.1415926" effort="0" velocity="0" />
+    <limit lower="-0.035" upper="3.1415926" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist1_Link">
@@ -177,7 +177,7 @@
     <parent link="foreArm_Link" />
     <child link="wrist1_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-1.396263402" upper="1.396263402" effort="0" velocity="0" />
+    <limit lower="-1.3963" upper="1.3963" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist2_Link">
@@ -208,7 +208,7 @@
     <parent link="wrist1_Link" />
     <child  link="wrist2_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.1416" upper="3.1416" effort="0" velocity="0" />
+    <limit lower="-3.1415926" upper="0.035" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist3_Link">
@@ -240,7 +240,7 @@
     <child link="wrist3_Link" />
     <axis xyz="0 0 1" />
 <!--    <limit lower="-1.570796327" upper="3.1415926" effort="0" velocity="0" />-->
-    <limit lower="-3.1415926" upper="3.1415926" effort="0" velocity="0" />
+    <limit lower="-1.0472" upper="2.618" effort="0" velocity="0" />
   </joint>
 
   <!-- modified line here -->
@@ -287,7 +287,7 @@
     </visual>
   </link>
   <joint name="eelink_finger_joint" type="fixed">
-    <origin xyz="0.227500 0.028080 0.071870" rpy="0 0 0"/>
+    <origin xyz="0.227500 0.028080 0.071870" rpy="-0.977384364 0 0"/>
     <parent link="ee_link"/>
     <child link="finger"/>
   </joint>
