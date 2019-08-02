@@ -65,16 +65,8 @@ int main(int argc, char **argv)
       {
         robot_driver.robot_send_service_.robotMoveFastStop();
 
-        usleep(0.1 * 1000000);
-        std_msgs::String msg;
-        msg.data = "stop";
-        trajectory_execution_pub_.publish(msg);
-        usleep(0.1 * 1000000);
-
-        std::queue<PlanningState>  zero;
-        swap(zero, robot_driver.buf_queue_);
-
-        robot_driver.robot_send_service_.rootServiceRobotControl(aubo_robot_namespace::RobotControlCommand::ClearSingularityOverSpeedAlarm);
+        while(robot_driver.buf_queue_.empty())
+          robot_driver.buf_queue_.pop();
 
         robot_driver.stop_flag = false;
       }

@@ -81,7 +81,6 @@ AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_
 
     joint_msgs_pub_ = nh_.advertise<aubo_msgs::JointMsg>("/aubo_driver/joint_msgs", 100);
     waypoint_pub_ = nh_.advertise<aubo_msgs::WayPoint>("/aubo_driver/tool_vector", 100);
-  //  trajectory_execution_pub_ = nh_.advertise<std_msgs::String>("trajectory_execution_event", 100);
 
     /** subscribe topics **/
     trajectory_execution_subs_ = nh_.subscribe("trajectory_execution_event", 10, &AuboDriver::trajectoryExecutionCallback,this);
@@ -119,10 +118,6 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
             /** Get the buff size of thr rib **/
             robot_receive_service_.robotServiceGetRobotDiagnosisInfo(rs.robot_diagnosis_info_);
             rib_buffer_size_ = rs.robot_diagnosis_info_.macTargetPosDataSize;
-            if (rs.robot_diagnosis_info_.singularityOverSpeedAlarm)
-            {
-                robot_send_service_.rootServiceRobotControl(aubo_robot_namespace::RobotControlCommand::ClearSingularityOverSpeedAlarm);
-            }
 
             /** Get JointStatus **/
             robot_receive_service_.robotServiceGetRobotJointStatus(rs.joint_status_, 6);
@@ -533,8 +528,8 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
     {
         int ret = aubo_robot_namespace::InterfaceCallSuccCode;
 
-        stop_flag = true;
-        usleep(0.5 * 1000000);
+        //stop_flag = true;
+//        usleep(0.5 * 1000000);
 
         ret = robot_send_service_.robotServiceLeaveTcp2CanbusMode();
         if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
