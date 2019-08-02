@@ -597,19 +597,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
     else if (msg->type == "moveUp")
     {
         int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-        ret = robot_send_service_.robotMoveFastStop();
-        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
-            ROS_INFO("Robot move fast stop sucess.");
-        else
-            ROS_ERROR("Robot move fast stop failed.");
-
-        if (buf_queue_.size() > 0)
-        {
-            usleep(0.1 * 1000000);
-            std_msgs::String msg;
-            msg.data = "stop";
-            trajectory_execution_pub_.publish(msg);
-        }
+        stop_flag = true;
 
         ret = robot_send_service_.robotServiceLeaveTcp2CanbusMode();
         if(ret == aubo_robot_namespace::InterfaceCallSuccCode)

@@ -138,7 +138,6 @@ namespace aubo_driver
             ros::Publisher io_pub_;
             ros::Publisher joint_msgs_pub_;
             ros::Publisher waypoint_pub_;
-            ros::Publisher trajectory_execution_pub_;
 
         private:
             void moveItPosCallback(const trajectory_msgs::JointTrajectoryPoint::ConstPtr &msg);
