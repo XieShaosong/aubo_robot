@@ -500,12 +500,13 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
     }
     else if (msg->data == "stop")
     {
-        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-        ret = robot_send_service_.robotMoveFastStop();
-        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
-            ROS_INFO("Robot move fast stop sucess.");
-        else
-            ROS_ERROR("Robot move fast stop failed.");
+        stop_flag_ = true;
+        // int ret = aubo_robot_namespace::InterfaceCallSuccCode;
+        // ret = robot_send_service_.robotMoveFastStop();
+        // if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+        //     ROS_INFO("Robot move fast stop sucess.");
+        // else
+        //     ROS_ERROR("Robot move fast stop failed.");
     }
 }
 
@@ -632,6 +633,18 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
 void AuboDriver::updateControlStatus()
 {
     data_count_++;
+
+    if (stop_flag_)
+    {
+        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
+        ret = robot_send_service_.robotMoveFastStop();
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("Robot move fast stop sucess.");
+        else
+            ROS_ERROR("Robot move fast stop failed.");
+
+        stop_flag_ = false;
+    }
     /** The max delay time is MAXALLOWEDDELAY * robot_driver.UPDATE_RATE_ = 50 * 0.002 = 0.1s **/
     if(data_count_ == MAXALLOWEDDELAY)
     {
@@ -644,22 +657,6 @@ void AuboDriver::updateControlStatus()
     if(start_move_ && rib_buffer_size_ < MINIMUM_BUFFER_SIZE)
     {
         setRobotJointsByMoveIt();
-    }
-}
-
-void AuboDriver::test(const aubo_robot_namespace::RobotEventInfo *eventInfo, void *arg)
-{
-    ROS_INFO("123123");
-    std_msgs::String msg;
-    msg.data = "goood";
-    switch (eventInfo->eventType)
-    {
-    case 8:
-        msg.data="1231231";   
-        break;
-    
-    default:
-        break;
     }
 }
 

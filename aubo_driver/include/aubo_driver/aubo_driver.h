@@ -100,8 +100,8 @@ namespace aubo_driver
             double* getTagrtPosition();
             void setTagrtPosition(double *target);
 
+            bool stop_flag_ = false;
             void updateControlStatus();
-            void test(const aubo_robot_namespace::RobotEventInfo *eventInfo, void *arg);
             void run();
             bool connectToRobotController();
             bool setIO(aubo_msgs::SetIORequest& req, aubo_msgs::SetIOResponse& resp);
