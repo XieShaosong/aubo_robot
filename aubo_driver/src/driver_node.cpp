@@ -60,9 +60,22 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(robot_driver.UPDATE_RATE_);
     while(ros::ok())
     {
-        robot_driver.updateControlStatus();
-        loop_rate.sleep();
-        ros::spinOnce();
+      if (robot_driver.stop_flag)
+      {
+        robot_driver.robot_send_service_.robotMoveFastStop();
+
+        usleep(0.5 * 1000000);
+       // if (buf_queue_.size() > 0)
+        //{
+          std_msgs::String msg;
+          msg.data = "stop";
+          robot_driver.trajectory_execution_pub_.publish(msg);
+        //}
+        robot_driver.stop_flag = false;
+      }
+      robot_driver.updateControlStatus();
+      loop_rate.sleep();
+      ros::spinOnce();
     }
     ROS_WARN("Exiting robot_driver");
     return(0);
