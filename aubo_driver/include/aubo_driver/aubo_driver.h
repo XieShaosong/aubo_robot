@@ -119,6 +119,7 @@ namespace aubo_driver
             ServiceInterface robot_send_service_;      //send
             ServiceInterface robot_receive_service_;     //receive
 
+            bool stop_flag = false;
             RobotState rs;
 //            std::thread* mb_publish_thread_;
 

@@ -81,7 +81,7 @@ void JointTrajectoryAction::trajectoryExecutionCallback(const std_msgs::String::
         ROS_INFO("trajectory execution status: stop1");
         // Marks the current goal as canceled.
 
-        active_goal_.setAborted();
+        active_goal_.setCanceled();
         has_active_goal_ = false;
     }
 }
