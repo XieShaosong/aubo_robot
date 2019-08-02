@@ -301,7 +301,7 @@
     </visual>
   </link>
   <joint name="eelink_palm_joint" type="fixed">
-    <origin xyz="0.211430 0.059050 -0.005870" rpy="-0.977384381 0 0"/>
+    <origin xyz="0.231430 0.059050 -0.005870" rpy="-0.977384381 0 0"/>
     <parent link="ee_link"/>
     <child link="palm"/>
   </joint>
