@@ -502,13 +502,6 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
     else if (msg->data == "stop")
     {
         stop_flag = true;
-        // if (buf_queue_.size() > 0)
-        // {
-        //     usleep(0.1 * 1000000);
-        //     std_msgs::String msg;
-        //     msg.data = "stop";
-        //     trajectory_execution_pub_.publish(msg);
-        // }
     }
 }
 
@@ -535,19 +528,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
     else if (msg->type == "movej")
     {
         int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-        // ret = robot_send_service_.robotMoveFastStop();
-        // if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
-        //     ROS_INFO("Robot move fast stop sucess.");
-        // else
-        //     ROS_ERROR("Robot move fast stop failed.");
 
-        // if (buf_queue_.size() > 0)
-        // {
-        //     usleep(0.1 * 1000000);
-        //     std_msgs::String msg;
-        //     msg.data = "stop";
-        //     trajectory_execution_pub_.publish(msg);
-        // }
         stop_flag = true;
         usleep(0.5 * 1000000);
 
@@ -641,25 +622,6 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
 void AuboDriver::updateControlStatus()
 {
     data_count_++;
-
-    // if (stop_flag)
-    // {
-    //     int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-    //     ret = robot_send_service_.robotMoveFastStop();
-    //     if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
-    //         ROS_INFO("Robot move fast stop sucess.");
-    //     else
-    //         ROS_ERROR("Robot move fast stop failed.");
-
-    //     usleep(0.5 * 1000000);
-    //     if (buf_queue_.size() > 0)
-    //     {
-    //         std_msgs::String msg;
-    //         msg.data = "stop";
-    //         trajectory_execution_pub_.publish(msg);
-    //     }
-    //     stop_flag = false;
-    // }
 
     /** The max delay time is MAXALLOWEDDELAY * robot_driver.UPDATE_RATE_ = 50 * 0.002 = 0.1s **/
     if(data_count_ == MAXALLOWEDDELAY)
