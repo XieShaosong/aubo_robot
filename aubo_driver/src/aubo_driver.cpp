@@ -119,6 +119,10 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
             /** Get the buff size of thr rib **/
             robot_receive_service_.robotServiceGetRobotDiagnosisInfo(rs.robot_diagnosis_info_);
             rib_buffer_size_ = rs.robot_diagnosis_info_.macTargetPosDataSize;
+            if (rs.robot_diagnosis_info_.singularityOverSpeedAlarm)
+            {
+                robot_send_service_.rootServiceRobotControl(aubo_robot_namespace::RobotControlCommand::ClearSingularityOverSpeedAlarm);
+            }
 
             /** Get JointStatus **/
             robot_receive_service_.robotServiceGetRobotJointStatus(rs.joint_status_, 6);
