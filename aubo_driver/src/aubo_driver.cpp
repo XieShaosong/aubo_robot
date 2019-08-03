@@ -324,8 +324,6 @@ bool AuboDriver::setRobotJointsByMoveIt()
                 while(!buf_queue_.empty())
                     buf_queue_.pop();
 
-//                if(normal_stopped_)
-//                    normal_stopped_ = false;
             }
             else if(protective_stopped_)
             {
@@ -377,9 +375,6 @@ bool AuboDriver::setRobotJointsByMoveIt()
         if(start_move_)
             start_move_ = false;
     }
-//    //clear the flag
-//    if(normal_stopped_)
-//        normal_stopped_ = false;
 }
 
 void AuboDriver::controllerSwitchCallback(const std_msgs::Int32::ConstPtr &msg)
@@ -532,12 +527,10 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
     }
     else if (msg->type == "movej")
     {
+        stop_flag = true;
+        usleep(0.5 * 1000000);
+
         int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-
-        //stop_flag = true;
-//        usleep(0.5 * 1000000);
-        normal_stopped_= false;
-
         ret = robot_send_service_.robotServiceLeaveTcp2CanbusMode();
         if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
         {
@@ -580,12 +573,16 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         }
         else
             ROS_ERROR("Failed to switch to ros-controller, make sure there is no other controller which is controlling the robot to move.");
+
+        if (normal_stopped_)
+            normal_stopped_ = false;
     }
     else if (msg->type == "moveUp")
     {
-        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
         stop_flag = true;
+        usleep(0.5 * 1000000);
 
+        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
         ret = robot_send_service_.robotServiceLeaveTcp2CanbusMode();
         if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
         {
@@ -622,6 +619,9 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         }
         else
             ROS_ERROR("Failed to switch to ros-controller, make sure there is no other controller which is controlling the robot to move.");
+
+        if (normal_stopped_)
+            normal_stopped_ = false;
     }
 }
 
