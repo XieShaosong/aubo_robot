@@ -317,13 +317,17 @@ bool AuboDriver::setRobotJointsByMoveIt()
 
         if(controller_connected_flag_)      // actually no need this judgment
         {
-            if(emergency_stopped_||normal_stopped_)
+            if (emergency_stopped_ || normal_stopped_)
             {
+                //cancle.data will be set 0 in the aubo_robot_simulator.py when clear this one trajectory data
+                std_msgs::UInt8 cancle;
+                cancle.data = 1;
+                cancle_trajectory_pub_.publish(cancle);
+
                 //clear the buffer, there will be a jerk
                 start_move_ = false;
-                while(!buf_queue_.empty())
+                while (!buf_queue_.empty())
                     buf_queue_.pop();
-
             }
             else if(protective_stopped_)
             {
@@ -459,6 +463,10 @@ void AuboDriver::trajectoryExecutionCallback(const std_msgs::String::ConstPtr &m
     {
         ROS_INFO("trajectory execution status: stop");
         normal_stopped_ = true;
+
+        // std_msgs::UInt8 msg1;
+        // msg1.data = 1;
+        // cancle_trajectory_pub_.publish(msg1);
     }
 }
 
