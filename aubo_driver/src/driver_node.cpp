@@ -52,6 +52,7 @@ int main(int argc, char **argv)
 
     ROS_INFO("aubo_driver/external_axis_number: %s", std::to_string(num).c_str());
     ros::Publisher trajectory_execution_pub_ = n.advertise<std_msgs::String>("trajectory_execution_event", 100);
+    ros::Publisher pub = n.advertise<std_msgs::UInt8>("aubo_driver/cancel_trajectory", 100);
     AuboDriver robot_driver(num);
     robot_driver.run();
 
@@ -65,9 +66,16 @@ int main(int argc, char **argv)
       {
         robot_driver.robot_send_service_.robotMoveFastStop();
 
-        std_msgs::String msg;
-        msg.data = "stop";
-        trajectory_execution_pub_.publish(msg);
+        if (!robot_driver.buf_queue_.empty())
+        {
+            std_msgs::String msg;
+            msg.data = "stop";
+            trajectory_execution_pub_.publish(msg);
+
+            std_msgs::UInt8 msg1;
+            msg1.data = 1;
+            pub.publish(msg1);
+        }
 
         robot_driver.stop_flag = false;
       }

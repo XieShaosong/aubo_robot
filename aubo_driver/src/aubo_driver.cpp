@@ -317,7 +317,7 @@ bool AuboDriver::setRobotJointsByMoveIt()
 
         if(controller_connected_flag_)      // actually no need this judgment
         {
-            if(emergency_stopped_ || normal_stopped_)
+            if(emergency_stopped_||normal_stopped_)
             {
                 //clear the buffer, there will be a jerk
                 start_move_ = false;
@@ -354,8 +354,8 @@ bool AuboDriver::setRobotJointsByMoveIt()
                     buf_queue_.pop();
 
                 //clear the flag
-                if(normal_stopped_)
-                    normal_stopped_ = false;
+//                if(normal_stopped_)
+//                    normal_stopped_ = false;
             }
             else
             {
@@ -574,8 +574,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         else
             ROS_ERROR("Failed to switch to ros-controller, make sure there is no other controller which is controlling the robot to move.");
 
-        if (normal_stopped_)
-            normal_stopped_ = false;
+      normal_stopped_ = false;
     }
     else if (msg->type == "moveUp")
     {
