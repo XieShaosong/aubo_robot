@@ -463,10 +463,6 @@ void AuboDriver::trajectoryExecutionCallback(const std_msgs::String::ConstPtr &m
     {
         ROS_INFO("trajectory execution status: stop");
         normal_stopped_ = true;
-
-        // std_msgs::UInt8 msg1;
-        // msg1.data = 1;
-        // cancle_trajectory_pub_.publish(msg1);
     }
 }
 
@@ -582,7 +578,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         else
             ROS_ERROR("Failed to switch to ros-controller, make sure there is no other controller which is controlling the robot to move.");
 
-      normal_stopped_ = false;
+        normal_stopped_ = false;
     }
     else if (msg->type == "moveUp")
     {
@@ -627,8 +623,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         else
             ROS_ERROR("Failed to switch to ros-controller, make sure there is no other controller which is controlling the robot to move.");
 
-        if (normal_stopped_)
-            normal_stopped_ = false;
+        normal_stopped_ = false;
     }
 }
 
