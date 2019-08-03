@@ -317,14 +317,17 @@ bool AuboDriver::setRobotJointsByMoveIt()
 
         if(controller_connected_flag_)      // actually no need this judgment
         {
-            if(emergency_stopped_)
+            if(emergency_stopped_ || normal_stopped_)
             {
                 //clear the buffer, there will be a jerk
                 start_move_ = false;
                 while(!buf_queue_.empty())
                     buf_queue_.pop();
+
+//                if(normal_stopped_)
+//                    normal_stopped_ = false;
             }
-            else if(protective_stopped_ || normal_stopped_)
+            else if(protective_stopped_)
             {
                 //cancle.data will be set 0 in the aubo_robot_simulator.py when clear this one trajectory data
 
@@ -374,6 +377,9 @@ bool AuboDriver::setRobotJointsByMoveIt()
         if(start_move_)
             start_move_ = false;
     }
+//    //clear the flag
+//    if(normal_stopped_)
+//        normal_stopped_ = false;
 }
 
 void AuboDriver::controllerSwitchCallback(const std_msgs::Int32::ConstPtr &msg)
@@ -530,6 +536,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
 
         //stop_flag = true;
 //        usleep(0.5 * 1000000);
+        normal_stopped_= false;
 
         ret = robot_send_service_.robotServiceLeaveTcp2CanbusMode();
         if(ret == aubo_robot_namespace::InterfaceCallSuccCode)

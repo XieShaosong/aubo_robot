@@ -65,8 +65,9 @@ int main(int argc, char **argv)
       {
         robot_driver.robot_send_service_.robotMoveFastStop();
 
-        while(robot_driver.buf_queue_.empty())
-          robot_driver.buf_queue_.pop();
+        std_msgs::String msg;
+        msg.data = "stop";
+        trajectory_execution_pub_.publish(msg);
 
         robot_driver.stop_flag = false;
       }
