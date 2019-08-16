@@ -273,7 +273,7 @@
     </visual>
   </link>
   <joint name="vision_joint" type="fixed">
-    <origin xyz="0.192777 -0.038643 -0.000208" rpy="-1.039315 0.180144 -0.295751"/>
+      <origin xyz="0.189326 -0.050356 -0.002892" rpy="-0.998538 0.194956 -0.289171"/>
     <parent link="ee_link"/>
     <child link="camera_link"/>
   </joint>
@@ -287,7 +287,7 @@
     </visual>
   </link>
   <joint name="eelink_finger_joint" type="fixed">
-    <origin xyz="0.227500 0.028080 0.071870" rpy="-0.977384364 0 0"/>
+      <origin xyz="0.247330 0.024730 0.078580" rpy="-0.977384364 0 0"/>
     <parent link="ee_link"/>
     <child link="finger"/>
   </joint>
@@ -301,7 +301,7 @@
     </visual>
   </link>
   <joint name="eelink_palm_joint" type="fixed">
-    <origin xyz="0.231430 0.059050 -0.005870" rpy="-0.977384381 0 0"/>
+      <origin xyz="0.211430 0.059050 -0.005870" rpy="-0.977384364 0 0"/>
     <parent link="ee_link"/>
     <child link="palm"/>
   </joint>
@@ -309,7 +309,7 @@
   <link name="eef_link">
     <visual>
       <geometry>
-        <mesh filename="package://aubo_description/meshes/aubo_i3/collision/eef_new.stl"/>
+        <mesh filename="package://aubo_description/meshes/aubo_i3/collision/eef_solid.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -317,7 +317,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://aubo_description/meshes/aubo_i3/collision/eef_new.stl"/>
+        <mesh filename="package://aubo_description/meshes/aubo_i3/collision/eef_solid.stl"/>
       </geometry>
     </collision>
     <!-- <inertial>
@@ -329,7 +329,7 @@
     <parent link="ee_link" />
     <child link = "eef_link" />
     <!-- <origin xyz="0.0 0.0 0.0" rpy="-0.610865 0 0.0" /> -->
-    <origin xyz="0.0 0.0 0.0" rpy="-2.094395 0 0.0" />
+    <origin xyz="0.005 0.0 0.0" rpy="-2.094395 0 0.0" />
   </joint>
 
 </robot>
