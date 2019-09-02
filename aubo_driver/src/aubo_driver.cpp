@@ -362,29 +362,8 @@ bool AuboDriver::setRobotJointsByMoveIt()
             }
             else
             {
-//                robot_send_service_.robotServiceInitGlobalMoveProfile();
-//                aubo_robot_namespace::JointVelcAccParam jointMaxAcc;
-//                aubo_robot_namespace::JointVelcAccParam jointMaxVelc;
-
-                for (int i = 0; i < 6; i++)
-                {
-                    ps.joint_acc_[i] = MAX_JOINT_ACC;
-                    ps.joint_vel_[i] = MAX_JOINT_VEL;
-                }
-
-//                ret = robot_send_service_.robotServiceSetGlobalMoveJointMaxAcc(jointMaxAcc);
-//                ret = robot_send_service_.robotServiceSetGlobalMoveJointMaxVelc(jointMaxVelc);
-//              //  memcpy(&jti.currentPosition[0], ps.joint_pos_, axis_number_*sizeof(double));
-//             //   memcpy(&jti.currentVelocity[0], ps.joint_vel_, axis_number_*sizeof(double));
-//              //  memcpy(&jti.currentAcceleration[0], ps.joint_acc_, axis_number_*sizeof(double));
-//               // memset(&jti.targetVelocity[0], ps.joint_vel_, axis_number_*sizeof(double));
-//                memcpy(&jti.currentVelocity[0], ps.joint_vel_, axis_number_*sizeof(double));
-//                memcpy(&jti.currentAcceleration[0], ps.joint_acc_, axis_number_*sizeof(double));
-//                memcpy(&jti.targetVelocity[0], ps.joint_vel_, axis_number_*sizeof(double));
-//                bool update = otgVelocityModeParameterUpdate(jti);
-
                 ret = robot_send_service_.robotServiceSetRobotPosData2Canbus(ps.joint_pos_);
-                                         }
+            }
 #ifdef LOG_INFO_DEBUG
             //            struct timeb tb;
             //            ftime(&tb);
