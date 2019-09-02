@@ -30,8 +30,8 @@
  */
 
 #include "aubo_driver/aubo_driver.h"
-#define MAX_JOINT_ACC 30.0/180.0*M_PI
-#define MAX_JOINT_VEL 15.0/180.0*M_PI
+#define MAX_JOINT_ACC 10.0/180.0*M_PI
+#define MAX_JOINT_VEL 10.0/180.0*M_PI
 #define MAX_END_ACC    0.5
 #define MAX_END_VEL    0.25
 
@@ -66,7 +66,6 @@ AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_
     }
     rs.robot_controller_ = ROBOT_CONTROLLER;
     rib_status_.data.resize(3);
-
     /** publish messages **/
     joint_states_pub_ = nh_.advertise<sensor_msgs::JointState>("joint_states", 300);
     joint_feedback_pub_ = nh_.advertise<control_msgs::FollowJointTrajectoryFeedback>("feedback_states", 100);
@@ -363,8 +362,29 @@ bool AuboDriver::setRobotJointsByMoveIt()
             }
             else
             {
+//                robot_send_service_.robotServiceInitGlobalMoveProfile();
+//                aubo_robot_namespace::JointVelcAccParam jointMaxAcc;
+//                aubo_robot_namespace::JointVelcAccParam jointMaxVelc;
+
+                for (int i = 0; i < 6; i++)
+                {
+                    ps.joint_acc_[i] = MAX_JOINT_ACC;
+                    ps.joint_vel_[i] = MAX_JOINT_VEL;
+                }
+
+//                ret = robot_send_service_.robotServiceSetGlobalMoveJointMaxAcc(jointMaxAcc);
+//                ret = robot_send_service_.robotServiceSetGlobalMoveJointMaxVelc(jointMaxVelc);
+//              //  memcpy(&jti.currentPosition[0], ps.joint_pos_, axis_number_*sizeof(double));
+//             //   memcpy(&jti.currentVelocity[0], ps.joint_vel_, axis_number_*sizeof(double));
+//              //  memcpy(&jti.currentAcceleration[0], ps.joint_acc_, axis_number_*sizeof(double));
+//               // memset(&jti.targetVelocity[0], ps.joint_vel_, axis_number_*sizeof(double));
+//                memcpy(&jti.currentVelocity[0], ps.joint_vel_, axis_number_*sizeof(double));
+//                memcpy(&jti.currentAcceleration[0], ps.joint_acc_, axis_number_*sizeof(double));
+//                memcpy(&jti.targetVelocity[0], ps.joint_vel_, axis_number_*sizeof(double));
+//                bool update = otgVelocityModeParameterUpdate(jti);
+
                 ret = robot_send_service_.robotServiceSetRobotPosData2Canbus(ps.joint_pos_);
-            }
+                                         }
 #ifdef LOG_INFO_DEBUG
             //            struct timeb tb;
             //            ftime(&tb);
