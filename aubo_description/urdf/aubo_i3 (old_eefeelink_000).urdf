@@ -273,7 +273,7 @@
     </visual>
   </link>
   <joint name="vision_joint" type="fixed">
-      <origin xyz="0.117660 -0.036399 0.010216" rpy="-0.967871 0.215096 -0.280483"/>
+      <origin xyz="0.189326 -0.050356 -0.002892" rpy="-0.998538 0.194956 -0.289171"/>
     <parent link="ee_link"/>
     <child link="camera_link"/>
   </joint>
@@ -287,7 +287,7 @@
     </visual>
   </link>
   <joint name="eelink_finger_joint" type="fixed">
-      <origin xyz="0.14600 0.03172 0.08558" rpy="-0.977384364 0 0"/>
+      <origin xyz="0.200 0.024730 0.078580" rpy="-0.977384364 0 0"/>
     <parent link="ee_link"/>
     <child link="finger"/>
   </joint>
@@ -301,7 +301,7 @@
     </visual>
   </link>
   <joint name="eelink_palm_joint" type="fixed">
-      <origin xyz="0.173930 0.005870 0.059050" rpy="-0.977384364 0 0"/>
+      <origin xyz="0.211430 0.059050 -0.005870" rpy="-0.977384364 0 0"/>
     <parent link="ee_link"/>
     <child link="palm"/>
   </joint>

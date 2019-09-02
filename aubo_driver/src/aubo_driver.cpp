@@ -30,8 +30,8 @@
  */
 
 #include "aubo_driver/aubo_driver.h"
-#define MAX_JOINT_ACC 30.0/180.0*M_PI
-#define MAX_JOINT_VEL 15.0/180.0*M_PI
+#define MAX_JOINT_ACC 10.0/180.0*M_PI
+#define MAX_JOINT_VEL 10.0/180.0*M_PI
 #define MAX_END_ACC    0.5
 #define MAX_END_VEL    0.25
 
@@ -66,7 +66,6 @@ AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_
     }
     rs.robot_controller_ = ROBOT_CONTROLLER;
     rib_status_.data.resize(3);
-
     /** publish messages **/
     joint_states_pub_ = nh_.advertise<sensor_msgs::JointState>("joint_states", 300);
     joint_feedback_pub_ = nh_.advertise<control_msgs::FollowJointTrajectoryFeedback>("feedback_states", 100);
