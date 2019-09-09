@@ -5,7 +5,7 @@
   <joint name="world_joint" type="fixed">
     <parent link="world" />
     <child link ="mounter" />
-    <origin xyz="0.0 -0.658 0.0" rpy="0 0 0.02618" />
+    <origin xyz="0.0 -0.658 0.0" rpy="0 0 0" />
   </joint>
 
   <link name="mounter">
@@ -30,7 +30,7 @@
   <joint name="mounter_joint" type="fixed">
     <parent link="mounter" />
     <child link = "base_link" />
-    <origin xyz="0.0 0 0.0" rpy="3.14159 0.0 2.35621"/>
+    <origin xyz="0.0 0 0.0" rpy="3.14159 0.0 3.14159"/>
   </joint>
 
   <link name="base_link">
@@ -273,7 +273,7 @@
     </visual>
   </link>
   <joint name="vision_joint" type="fixed">
-      <origin xyz="0.117660 -0.036399 0.010216" rpy="-0.967871 0.215096 -0.280483"/>
+      <origin xyz="0.118007 -0.035189 0.012310" rpy="-1.016933 0.220174 -0.290849"/>
     <parent link="ee_link"/>
     <child link="camera_link"/>
   </joint>
@@ -287,7 +287,7 @@
     </visual>
   </link>
   <joint name="eelink_finger_joint" type="fixed">
-      <origin xyz="0.14600 0.03172 0.08558" rpy="-0.977384364 0 0"/>
+      <origin xyz="0.161000 0.029720 0.075580" rpy="-0.977384364 0 0"/>
     <parent link="ee_link"/>
     <child link="finger"/>
   </joint>
