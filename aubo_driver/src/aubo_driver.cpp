@@ -543,7 +543,11 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         else
             ROS_ERROR("Failed to switch to robot-controller");
 
-        robot_send_service_.robotServiceInitGlobalMoveProfile();
+        ret = robot_send_service_.robotServiceInitGlobalMoveProfile();
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("Init global move profile sucess.");
+        else
+            ROS_ERROR("Init global move profile failed. errCode: %d", ret);
         
         aubo_robot_namespace::JointVelcAccParam jointMaxAcc;
         aubo_robot_namespace::JointVelcAccParam jointMaxVelc;
@@ -554,8 +558,16 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
             jointMaxVelc.jointPara[i] = MAX_JOINT_VEL;
         }
 
-        robot_send_service_.robotServiceSetGlobalMoveJointMaxAcc(jointMaxAcc);
-        robot_send_service_.robotServiceSetGlobalMoveJointMaxVelc(jointMaxVelc);
+        ret = robot_send_service_.robotServiceSetGlobalMoveJointMaxAcc(jointMaxAcc);
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("Set global move joint max acc sucess.");
+        else
+            ROS_ERROR("Set global move joint max acc failed. errCode: %d", ret);
+        ret = robot_send_service_.robotServiceSetGlobalMoveJointMaxVelc(jointMaxVelc);
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("Set global move joint max velc sucess.");
+        else
+            ROS_ERROR("Set global move joint max velc failed. errCode: %d", ret);
 
         double joint[6];
         for (int i = 0; i < 6; i++)
@@ -594,7 +606,12 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         else
             ROS_ERROR("Failed to switch to robot-controller");
 
-        robot_send_service_.robotServiceInitGlobalMoveProfile();
+        ret = robot_send_service_.robotServiceInitGlobalMoveProfile();
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("Init global move profile sucess.");
+        else
+            ROS_ERROR("Init global move profile failed. errCode: %d", ret);
+
         robot_send_service_.robotServiceSetGlobalMoveEndMaxLineAcc(MAX_END_ACC);
         robot_send_service_.robotServiceSetGlobalMoveEndMaxAngleAcc(MAX_END_ACC);
         robot_send_service_.robotServiceSetGlobalMoveEndMaxLineVelc(MAX_END_VEL);
