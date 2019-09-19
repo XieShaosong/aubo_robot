@@ -287,7 +287,7 @@
     </visual>
   </link>
   <joint name="eelink_finger_joint" type="fixed">
-      <origin xyz="0.17600 0.033720 0.083580" rpy="-0.977384364 0 0"/>
+      <origin xyz="0.17600 0.038720 0.080580" rpy="-0.977384364 0 0"/>
     <parent link="ee_link"/>
     <child link="finger"/>
   </joint>
@@ -301,7 +301,7 @@
     </visual>
   </link>
   <joint name="eelink_finger_rub_joint" type="fixed">
-      <origin xyz="0.166500 0.02626 0.07855" rpy="-0.977384364 0 0"/>
+      <origin xyz="0.166500 0.02826 0.07855" rpy="-0.977384364 0 0"/>
     <parent link="ee_link"/>
     <child link="finger_rub"/>
   </joint>

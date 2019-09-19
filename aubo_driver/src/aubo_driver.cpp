@@ -32,8 +32,8 @@
 #include "aubo_driver/aubo_driver.h"
 #define MAX_JOINT_ACC 10.0/180.0*M_PI
 #define MAX_JOINT_VEL 10.0/180.0*M_PI
-#define MAX_END_ACC    0.5
-#define MAX_END_VEL    0.25
+#define MAX_END_ACC    0.025
+#define MAX_END_VEL    0.0125
 
 namespace aubo_driver {
 
