@@ -34,7 +34,7 @@
     <rosparam param="/source_list">[/move_group/fake_controller_joint_states]</rosparam>
      <rosparam>
         zeros:
-            shoulder_joint: -0.787
+            shoulder_joint: 1.57
             upperArm_joint: -1.57
             foreArm_joint: 1.39
             wrist1_joint: 1.134

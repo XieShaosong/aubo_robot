@@ -85,3 +85,19 @@ palm:
     - PRMstarkConfigDefault
   projection_evaluator: joints(upperArm_joint, foreArm_joint)
   longest_valid_segment_fraction: 0.001
+finger_rub:
+  default_planner_config: RRTConnectkConfigDefault
+  planner_configs:
+    - SBLkConfigDefault
+    - ESTkConfigDefault
+    - LBKPIECEkConfigDefault
+    - BKPIECEkConfigDefault
+    - KPIECEkConfigDefault
+    - RRTkConfigDefault
+    - RRTConnectkConfigDefault
+    - RRTstarkConfigDefault
+    - TRRTkConfigDefault
+    - PRMkConfigDefault
+    - PRMstarkConfigDefault
+  projection_evaluator: joints(upperArm_joint, foreArm_joint)
+  longest_valid_segment_fraction: 0.001
