@@ -20,6 +20,8 @@ For the latest features and developments you might want to install from source.<
 
 	The `recommended` gcc version is 4.8 for Ubuntu 14.04; And for Ubuntu 16.04, the gcc version is 5.4.
 
+6.  sudo apt-get install ros-kinetic-trac-ik-kinematics-plugi
+
 ### Contents
 ----
 * The repository contains packages may be unstable, and they will be migrated to the [ROS-I](https://github.com/ros-industrial) repository after sufficient testing.<br>
