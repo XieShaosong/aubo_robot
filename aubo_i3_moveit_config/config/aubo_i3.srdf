@@ -64,4 +64,5 @@
     <disable_collisions link1="wrist3_Link" link2="eef_link" reason="Adjacent" />
     <disable_collisions link1="mounter" link2="base_link" reason="Adjacent" />
     <disable_collisions link1="eef_link" link2="finger_rub" reason="Adjacent" />
+    <disable_collisions link1="finger_rub" link2="finger" reason="Adjacent" />
 </robot>
