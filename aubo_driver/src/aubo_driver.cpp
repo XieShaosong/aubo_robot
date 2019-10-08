@@ -591,7 +591,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
 
         normal_stopped_ = false;
     }
-    else if (msg->type == "moveUp")
+    else if (msg->type == "movel")
     {
         stop_flag = true;
         usleep(0.5 * 1000000);
@@ -621,14 +621,14 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         userCoord.coordType = aubo_robot_namespace::coordinate_refer::BaseCoordinate;
         aubo_robot_namespace::MoveRelative moveRelative;
         moveRelative.ena = true;
-        moveRelative.relativePosition[0] = 0;
-        moveRelative.relativePosition[1] = 0;
-        moveRelative.relativePosition[2] = msg->values[0];
+        moveRelative.relativePosition[0] = msg->values[0];
+        moveRelative.relativePosition[1] = msg->values[1];
+        moveRelative.relativePosition[2] = msg->values[2];
         ret = robot_send_service_.robotMoveLineToTargetPositionByRelative(userCoord, moveRelative, false);
         if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
-            ROS_INFO("moveUp sucess.");
+            ROS_INFO("movel sucess.");
         else
-            ROS_ERROR("moveUp failed. %d", ret);
+            ROS_ERROR("movel failed. %d", ret);
 
         ret = robot_send_service_.robotServiceEnterTcp2CanbusMode();
         if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
