@@ -138,7 +138,7 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
                 robot_status_.in_motion.val       = (int)start_move_;
                 robot_status_.in_error.val        = (int)protective_stopped_;   //used for protective stop.
                 robot_status_.error_code          = (int32)rs.robot_diagnosis_info_.singularityOverSpeedAlarm;
-
+                ROS_ERROR("1231324143123412 %d",rs.robot_diagnosis_info_.robotCollision);
                 // publish joint_msg
                 joint_msg_.actual_current.clear();
                 joint_msg_.target_current.clear();
@@ -505,6 +505,15 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
     else if (msg->data == "stop")
     {
         stop_flag = true;
+    }
+    else if (msg->data == "collision recover")
+    {
+        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
+        ret = robot_send_service_.robotServiceCollisionRecover();
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("collision recover sucess.");
+        else
+            ROS_ERROR("collision recover failed.");
     }
 }
 
