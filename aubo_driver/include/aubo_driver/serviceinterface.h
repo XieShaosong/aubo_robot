@@ -838,7 +838,7 @@ public:
      * @param IsBolck        是否阻塞
      * @return　调用成功返回ErrnoSucc;错误返回错误号
      */
-    int  rootServiceRobotShutdown(bool IsBolck = true);
+    int  robotServiceRobotShutdown(bool IsBolck = true);
 
 
     /**********************************************************************************************************************************************

@@ -486,7 +486,7 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
     else if(msg->data == "powerOff")
     {
         int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-        ret = robot_send_service_.rootServiceRobotShutdown(true);
+        ret = robot_send_service_.robotServiceRobotShutdown(true);
         if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
             ROS_INFO("powerOff sucess.");
         else
