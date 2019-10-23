@@ -641,6 +641,10 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         moveRelative.relativePosition[0] = msg->values[0];
         moveRelative.relativePosition[1] = msg->values[1];
         moveRelative.relativePosition[2] = msg->values[2];
+        moveRelative.relativeOri.w = msg->values[3];
+        moveRelative.relativeOri.x = msg->values[4];
+        moveRelative.relativeOri.y = msg->values[5];
+        moveRelative.relativeOri.z = msg->values[6];
         ret = robot_send_service_.robotMoveLineToTargetPositionByRelative(userCoord, moveRelative, false);
         if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
             ROS_INFO("movel sucess.");
