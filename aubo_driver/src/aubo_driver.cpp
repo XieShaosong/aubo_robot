@@ -598,7 +598,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
 
         normal_stopped_ = false;
     }
-    else if (msg->type == "movel")
+    else if (msg->type == "movel_tool")
     {
         stop_flag = true;
         usleep(0.5 * 1000000);
@@ -653,7 +653,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
 
         normal_stopped_ = false;
     }
-    else if (msg->type == "movel_tool")
+    else if (msg->type == "movel")
     {
         stop_flag = true;
         usleep(0.5 * 1000000);
