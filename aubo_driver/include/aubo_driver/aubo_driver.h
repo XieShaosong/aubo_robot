@@ -122,6 +122,7 @@ namespace aubo_driver
             bool stop_flag = false;
             RobotState rs;
 //            std::thread* mb_publish_thread_;
+            aubo_robot_namespace::ToolKinematicsParam tcp;
 
             std::queue<PlanningState>  buf_queue_;
             aubo_msgs::JointPos cur_pos;

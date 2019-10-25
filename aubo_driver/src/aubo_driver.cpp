@@ -529,7 +529,6 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
 {
     if (msg->type == "setTcp")
     {
-        aubo_robot_namespace::ToolKinematicsParam tcp;
         aubo_robot_namespace::Rpy rpy;
         rpy.rx = msg->values[3];
         rpy.ry = msg->values[4];
@@ -608,7 +607,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
 
         normal_stopped_ = false;
     }
-    else if (msg->type == "movel")
+    else if (msg->type == "movel_tool")
     {
         stop_flag = true;
         usleep(0.5 * 1000000);
@@ -616,6 +615,61 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         int ret = aubo_robot_namespace::InterfaceCallSuccCode;
         ret = robot_send_service_.robotServiceLeaveTcp2CanbusMode();
         if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
+        {
+            ROS_INFO("Switches to robot-controller successfully");
+            control_option_ = aubo_driver::AuboAPI;
+        }
+        else
+            ROS_ERROR("Failed to switch to robot-controller");
+
+        ret = robot_send_service_.robotServiceInitGlobalMoveProfile();
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("Init global move profile sucess.");
+        else
+            ROS_ERROR("Init global move profile failed. errCode: %d", ret);
+
+        robot_send_service_.robotServiceSetGlobalMoveEndMaxLineAcc(MAX_END_ACC);
+        robot_send_service_.robotServiceSetGlobalMoveEndMaxAngleAcc(MAX_END_ACC);
+        robot_send_service_.robotServiceSetGlobalMoveEndMaxLineVelc(MAX_END_VEL);
+        robot_send_service_.robotServiceSetGlobalMoveEndMaxAngleVelc(MAX_END_VEL);
+
+        aubo_robot_namespace::CoordCalibrateByJointAngleAndTool userCoord;
+        userCoord.coordType = aubo_robot_namespace::coordinate_refer::EndCoordinate;
+        userCoord.toolDesc = tcp;
+        aubo_robot_namespace::MoveRelative moveRelative;
+        moveRelative.ena = true;
+        moveRelative.relativePosition[0] = msg->values[0];
+        moveRelative.relativePosition[1] = msg->values[1];
+        moveRelative.relativePosition[2] = msg->values[2];
+        moveRelative.relativeOri.w = msg->values[3];
+        moveRelative.relativeOri.x = msg->values[4];
+        moveRelative.relativeOri.y = msg->values[5];
+        moveRelative.relativeOri.z = msg->values[6];
+        ret = robot_send_service_.robotMoveLineToTargetPositionByRelative(userCoord, moveRelative, false);
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+            ROS_INFO("movel sucess.");
+        else
+            ROS_ERROR("movel failed. %d", ret);
+
+        ret = robot_send_service_.robotServiceEnterTcp2CanbusMode();
+        if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
+        {
+            ROS_INFO("Switches to ros-controller successfully");
+            control_option_ = aubo_driver::RosMoveIt;
+        }
+        else
+            ROS_ERROR("Failed to switch to ros-controller, make sure there is no other controller which is controlling the robot to move.");
+
+        normal_stopped_ = false;
+    }
+    else if (msg->type == "movel")
+    {
+        stop_flag = true;
+        usleep(0.5 * 1000000);
+
+        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
+        ret = robot_send_service_.robotServiceLeaveTcp2CanbusMode();
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
         {
             ROS_INFO("Switches to robot-controller successfully");
             control_option_ = aubo_driver::AuboAPI;
@@ -652,7 +706,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
             ROS_ERROR("movel failed. %d", ret);
 
         ret = robot_send_service_.robotServiceEnterTcp2CanbusMode();
-        if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
+        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
         {
             ROS_INFO("Switches to ros-controller successfully");
             control_option_ = aubo_driver::RosMoveIt;
