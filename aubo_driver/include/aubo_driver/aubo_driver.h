@@ -107,7 +107,6 @@ namespace aubo_driver
             bool getFK(aubo_msgs::GetFKRequest& req, aubo_msgs::GetFKResponse& resp);
             bool getIK(aubo_msgs::GetIKRequest& req, aubo_msgs::GetIKResponse& resp);
 
-            void setCollisionStopped(bool collision_stopped);
             const int UPDATE_RATE_ = 400;
             const int TIMER_SPAN_ = 50;
             const double THRESHHOLD = 0.000001;
