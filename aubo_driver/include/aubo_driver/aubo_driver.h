@@ -107,6 +107,7 @@ namespace aubo_driver
             bool getFK(aubo_msgs::GetFKRequest& req, aubo_msgs::GetFKResponse& resp);
             bool getIK(aubo_msgs::GetIKRequest& req, aubo_msgs::GetIKResponse& resp);
 
+            void setCollisionStopped(bool collision_stopped);
             const int UPDATE_RATE_ = 400;
             const int TIMER_SPAN_ = 50;
             const double THRESHHOLD = 0.000001;
@@ -120,7 +121,7 @@ namespace aubo_driver
             ServiceInterface robot_receive_service_;     //receive
 
             bool stop_flag = false;
-            bool collision_stop = false;
+            static bool collision_stopped_;
             RobotState rs;
 //            std::thread* mb_publish_thread_;
             aubo_robot_namespace::ToolKinematicsParam tcp;

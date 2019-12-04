@@ -38,6 +38,7 @@
 namespace aubo_driver {
 
 std::string AuboDriver::joint_name_[ARM_DOF] = {"shoulder_joint","upperArm_joint","foreArm_joint","wrist1_joint","wrist2_joint","wrist3_joint"};
+bool AuboDriver::collision_stopped_ = false;
 
 AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_recieved_(false),data_count_(0),real_robot_exist_(false),emergency_stopped_(false),protective_stopped_(false),normal_stopped_(false),
     controller_connected_flag_(false),start_move_(false),control_mode_ (aubo_driver::SendTargetGoal),rib_buffer_size_(0),jti(ARM_DOF,1.0/200),jto(ARM_DOF),collision_class_(8)
@@ -138,7 +139,7 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
                 robot_status_.drives_powered.val  = (int8)rs.robot_diagnosis_info_.armPowerStatus;
                 robot_status_.motion_possible.val = (int)(!start_move_);
                 robot_status_.in_motion.val       = (int)start_move_;
-                robot_status_.in_error.val        = (int)collision_stop;   //used for collision stop.
+                robot_status_.in_error.val        = (int)collision_stopped_;   //used for collision stop.
                 robot_status_.error_code          = (int32)rs.robot_diagnosis_info_.singularityOverSpeedAlarm;
                 // publish joint_msg
                 joint_msg_.actual_current.clear();
@@ -512,7 +513,10 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
         int ret = aubo_robot_namespace::InterfaceCallSuccCode;
         ret = robot_send_service_.robotServiceCollisionRecover();
         if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+        {
             ROS_INFO("collision recover sucess.");
+            collision_stopped_ = false;
+        }
         else
             ROS_ERROR("collision recover failed.");
     }
@@ -534,9 +538,7 @@ void AuboDriver::RealTimeRobotEventCallback(const aubo_robot_namespace::RobotEve
     switch (pEventInfo->eventType)
     {
     case aubo_robot_namespace::RobotEvent_collision:
-    {
-        ROS_ERROR("12312313412341341234123412341234123");
-    }
+        collision_stopped_ = true;
         break;
 
     default:
