@@ -38,6 +38,7 @@
 namespace aubo_driver {
 
 std::string AuboDriver::joint_name_[ARM_DOF] = {"shoulder_joint","upperArm_joint","foreArm_joint","wrist1_joint","wrist2_joint","wrist3_joint"};
+bool AuboDriver::collision_stopped_ = false;
 
 AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_recieved_(false),data_count_(0),real_robot_exist_(false),emergency_stopped_(false),protective_stopped_(false),normal_stopped_(false),
     controller_connected_flag_(false),start_move_(false),control_mode_ (aubo_driver::SendTargetGoal),rib_buffer_size_(0),jti(ARM_DOF,1.0/200),jto(ARM_DOF),collision_class_(8)
@@ -89,6 +90,8 @@ AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_
     moveAPI_subs_ = nh_.subscribe("moveAPI_cmd", 10, &AuboDriver::AuboAPICallback, this);
     controller_switch_sub_ = nh_.subscribe("/aubo_driver/controller_switch", 10, &AuboDriver::controllerSwitchCallback, this);
     arm_cmd_subs_ = nh_.subscribe("/aubo_driver/arm_cmd", 10, &AuboDriver::armCmdCallback, this);
+
+    robot_receive_service_.robotServiceRegisterRobotEventInfoCallback(AuboDriver::RealTimeRobotEventCallback, this);
 }
 
 AuboDriver::~AuboDriver()
@@ -136,7 +139,7 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
                 robot_status_.drives_powered.val  = (int8)rs.robot_diagnosis_info_.armPowerStatus;
                 robot_status_.motion_possible.val = (int)(!start_move_);
                 robot_status_.in_motion.val       = (int)start_move_;
-                robot_status_.in_error.val        = (int)protective_stopped_;   //used for protective stop.
+                robot_status_.in_error.val        = (int)collision_stopped_;   //used for collision stop.
                 robot_status_.error_code          = (int32)rs.robot_diagnosis_info_.singularityOverSpeedAlarm;
                 // publish joint_msg
                 joint_msg_.actual_current.clear();
@@ -315,7 +318,7 @@ bool AuboDriver::setRobotJointsByMoveIt()
 
         if(controller_connected_flag_)      // actually no need this judgment
         {
-            if (emergency_stopped_ || normal_stopped_)
+            if (emergency_stopped_ || normal_stopped_ || collision_stopped_)
             {
                 //cancle.data will be set 0 in the aubo_robot_simulator.py when clear this one trajectory data
                 std_msgs::UInt8 cancle;
@@ -492,15 +495,6 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
         else
             ROS_ERROR("poerOff failed.");
     }
-    else if(msg->data == "unlock protective stop")
-    {
-        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-        ret = robot_send_service_.robotServiceRobotSafetyguardResetSucc(1);
-        if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
-            ROS_INFO("unlock protective stop sucess.");
-        else
-            ROS_ERROR("unlock protective stop failed.");
-    }
     else if (msg->data == "stop")
     {
         stop_flag = true;
@@ -510,18 +504,27 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
         int ret = aubo_robot_namespace::InterfaceCallSuccCode;
         ret = robot_send_service_.robotServiceCollisionRecover();
         if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
+        {
             ROS_INFO("collision recover sucess.");
+            collision_stopped_ = false;
+        }
         else
             ROS_ERROR("collision recover failed.");
     }
-    else if (msg->data == "clear reduced mode error")
+}
+
+void AuboDriver::RealTimeRobotEventCallback(const aubo_robot_namespace::RobotEventInfo *pEventInfo, void *arg)
+{
+    (void) arg;
+
+    switch (pEventInfo->eventType)
     {
-        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-        ret = robot_send_service_.robotServiceClearReducedModeError(1);
-        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
-            ROS_INFO("clear reduced mode error sucess.");
-        else
-            ROS_ERROR("clear reduced mode error failed.");
+    case aubo_robot_namespace::RobotEvent_collision:
+        collision_stopped_ = true;
+        break;
+
+    default:
+        break;
     }
 }
 
