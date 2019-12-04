@@ -318,7 +318,7 @@ bool AuboDriver::setRobotJointsByMoveIt()
 
         if(controller_connected_flag_)      // actually no need this judgment
         {
-            if (emergency_stopped_ || normal_stopped_)
+            if (emergency_stopped_ || normal_stopped_ || collision_stopped_)
             {
                 //cancle.data will be set 0 in the aubo_robot_simulator.py when clear this one trajectory data
                 std_msgs::UInt8 cancle;
@@ -495,15 +495,6 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
         else
             ROS_ERROR("poerOff failed.");
     }
-    else if(msg->data == "unlock protective stop")
-    {
-        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-        ret = robot_send_service_.robotServiceRobotSafetyguardResetSucc(1);
-        if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
-            ROS_INFO("unlock protective stop sucess.");
-        else
-            ROS_ERROR("unlock protective stop failed.");
-    }
     else if (msg->data == "stop")
     {
         stop_flag = true;
@@ -519,15 +510,6 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
         }
         else
             ROS_ERROR("collision recover failed.");
-    }
-    else if (msg->data == "clear reduced mode error")
-    {
-        int ret = aubo_robot_namespace::InterfaceCallSuccCode;
-        ret = robot_send_service_.robotServiceClearReducedModeError(1);
-        if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
-            ROS_INFO("clear reduced mode error sucess.");
-        else
-            ROS_ERROR("clear reduced mode error failed.");
     }
 }
 
