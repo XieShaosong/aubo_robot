@@ -89,6 +89,8 @@ AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_
     moveAPI_subs_ = nh_.subscribe("moveAPI_cmd", 10, &AuboDriver::AuboAPICallback, this);
     controller_switch_sub_ = nh_.subscribe("/aubo_driver/controller_switch", 10, &AuboDriver::controllerSwitchCallback, this);
     arm_cmd_subs_ = nh_.subscribe("/aubo_driver/arm_cmd", 10, &AuboDriver::armCmdCallback, this);
+
+    robot_receive_service_.robotServiceRegisterRobotEventInfoCallback(AuboDriver::RealTimeRobotEventCallback, this);
 }
 
 AuboDriver::~AuboDriver()
@@ -136,7 +138,7 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
                 robot_status_.drives_powered.val  = (int8)rs.robot_diagnosis_info_.armPowerStatus;
                 robot_status_.motion_possible.val = (int)(!start_move_);
                 robot_status_.in_motion.val       = (int)start_move_;
-                robot_status_.in_error.val        = (int)protective_stopped_;   //used for protective stop.
+                robot_status_.in_error.val        = (int)collision_stop;   //used for collision stop.
                 robot_status_.error_code          = (int32)rs.robot_diagnosis_info_.singularityOverSpeedAlarm;
                 // publish joint_msg
                 joint_msg_.actual_current.clear();
@@ -522,6 +524,23 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
             ROS_INFO("clear reduced mode error sucess.");
         else
             ROS_ERROR("clear reduced mode error failed.");
+    }
+}
+
+void AuboDriver::RealTimeRobotEventCallback(const aubo_robot_namespace::RobotEventInfo *pEventInfo, void *arg)
+{
+    (void) arg;
+
+    switch (pEventInfo->eventType)
+    {
+    case aubo_robot_namespace::RobotEvent_collision:
+    {
+        ROS_ERROR("12312313412341341234123412341234123");
+    }
+        break;
+
+    default:
+        break;
     }
 }
 
