@@ -640,7 +640,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         userCoord.coordType = aubo_robot_namespace::coordinate_refer::EndCoordinate;
         userCoord.toolDesc = tcp;
         aubo_robot_namespace::MoveRelative moveRelative;
-        moveRelative.ena = true;
+        moveRelative.ena = false;
         moveRelative.relativePosition[0] = msg->values[0];
         moveRelative.relativePosition[1] = msg->values[1];
         moveRelative.relativePosition[2] = msg->values[2];
@@ -694,7 +694,7 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         aubo_robot_namespace::CoordCalibrateByJointAngleAndTool userCoord;
         userCoord.coordType = aubo_robot_namespace::coordinate_refer::BaseCoordinate;
         aubo_robot_namespace::MoveRelative moveRelative;
-        moveRelative.ena = true;
+        moveRelative.ena = false;
         moveRelative.relativePosition[0] = msg->values[0];
         moveRelative.relativePosition[1] = msg->values[1];
         moveRelative.relativePosition[2] = msg->values[2];
