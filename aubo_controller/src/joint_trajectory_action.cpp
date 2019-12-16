@@ -79,13 +79,20 @@ void JointTrajectoryAction::trajectoryExecutionCallback(const std_msgs::String::
     if(msg->data == "stop")
     {
         ROS_INFO("trajectory execution status: stop1");
-        // Marks the current goal as canceled.
 
+        // Modified by xss
+        // Due to the artificial stopping of the robot arm movement, the previous processing method will cause the robot arm powerOff.
+        // After investigation, you need to first send a null value to the topic "joint_path_command" and stop the controller.
         trajectory_msgs::JointTrajectory empty;
         empty.joint_names = joint_names_;
         pub_trajectory_command_.publish(empty);
 
+        // Marks the current goal as canceled.
+        // setAborted - Notify that goal encountered an error during processsing, and had to be aborted
+        // setCanceled - Notify that goal is no longer being processed, due to a cancel request
         active_goal_.setCanceled();
+
+        // active_goal_.setAborted();
         has_active_goal_ = false;
     }
 }

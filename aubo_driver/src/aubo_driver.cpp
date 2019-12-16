@@ -134,13 +134,21 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
             if(real_robot_exist_)
             {
                 // publish robot_status information to the controller action server.
+                int32 error_code = 5000;
+                if (collision_stopped_)
+                    error_code = 5001;
+                else if (protective_stopped_)
+                    error_code = 5002;
+                else if (rs.robot_diagnosis_info_.singularityOverSpeedAlarm)
+                    error_code = 5003;
+
                 robot_status_.mode.val            = (int8)rs.robot_diagnosis_info_.orpeStatus;
                 robot_status_.e_stopped.val       = (int8)(rs.robot_diagnosis_info_.softEmergency || emergency_stopped_);
                 robot_status_.drives_powered.val  = (int8)rs.robot_diagnosis_info_.armPowerStatus;
                 robot_status_.motion_possible.val = (int)(!start_move_);
                 robot_status_.in_motion.val       = (int)start_move_;
-                robot_status_.in_error.val        = (int)collision_stopped_;   //used for collision stop.
-                robot_status_.error_code          = (int32)rs.robot_diagnosis_info_.singularityOverSpeedAlarm;
+                robot_status_.in_error.val        = (int)(collision_stopped_ || protective_stopped_ || rs.robot_diagnosis_info_.singularityOverSpeedAlarm);
+                robot_status_.error_code          = error_code;
                 // publish joint_msg
                 joint_msg_.actual_current.clear();
                 joint_msg_.target_current.clear();
@@ -318,6 +326,10 @@ bool AuboDriver::setRobotJointsByMoveIt()
 
         if(controller_connected_flag_)      // actually no need this judgment
         {
+            // emergency_stopped_: The flag set in the driver after the emergency stop button is pressed
+            // normal_stopped_: The flag set by the driver after artificial stopping during the exercise
+            // collision_stopped_: After the robot arm collided and stopped, the flag set in the driver
+            // protective_stopped_: After the protection of the robot arm stops, the flag set in the driver
             if (emergency_stopped_ || normal_stopped_ || collision_stopped_)
             {
                 //cancle.data will be set 0 in the aubo_robot_simulator.py when clear this one trajectory data
@@ -650,9 +662,9 @@ void AuboDriver::armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg)
         moveRelative.relativeOri.z = msg->values[6];
         ret = robot_send_service_.robotMoveLineToTargetPositionByRelative(userCoord, moveRelative, false);
         if (ret == aubo_robot_namespace::InterfaceCallSuccCode)
-            ROS_INFO("movel sucess.");
+            ROS_INFO("movel_tool sucess.");
         else
-            ROS_ERROR("movel failed. %d", ret);
+            ROS_ERROR("movel_tool failed. %d", ret);
 
         ret = robot_send_service_.robotServiceEnterTcp2CanbusMode();
         if(ret == aubo_robot_namespace::InterfaceCallSuccCode)
