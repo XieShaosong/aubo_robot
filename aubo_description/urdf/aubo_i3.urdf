@@ -146,7 +146,7 @@
     <parent link="upperArm_Link" />
     <child link="foreArm_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-0.035" upper="3.036873" effort="0" velocity="0" />
+    <limit lower="-0.035" upper="2.6179939" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist1_Link">
