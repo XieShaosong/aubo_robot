@@ -146,7 +146,7 @@
     <parent link="upperArm_Link" />
     <child link="foreArm_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-0.035" upper="2.6179939" effort="0" velocity="0" />
+    <limit lower="-0.035" upper="3.036873" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist1_Link">
@@ -273,7 +273,7 @@
     </visual>
   </link>
   <joint name="vision_joint" type="fixed">
-      <origin xyz="0.108847 -0.030902 0.008042" rpy="-1.130905 0.171703 -0.317177"/>
+      <origin xyz="0.107466 -0.031883 0.005886" rpy="-1.121578 0.168985 -0.313050"/>
     <parent link="ee_link"/>
     <child link="camera_link"/>
   </joint>
@@ -287,7 +287,7 @@
     </visual>
   </link>
   <joint name="eelink_finger_joint" type="fixed">
-      <origin xyz="0.181000 0.032720 0.086580" rpy="-1.047197533 0 0"/>
+      <origin xyz="0.18100 0.038720 0.080580" rpy="-1.047197533 0 0"/>
     <parent link="ee_link"/>
     <child link="finger"/>
   </joint>
@@ -301,7 +301,7 @@
     </visual>
   </link>
   <joint name="eelink_finger_rub_joint" type="fixed">
-      <origin xyz="0.181000 0.025960 0.084050" rpy="-1.047197533 0 0"/>
+      <origin xyz="0.18100 0.02826 0.07855" rpy="-1.047197533 0 0"/>
     <parent link="ee_link"/>
     <child link="finger_rub"/>
   </joint>

@@ -32,6 +32,11 @@
 #include "sensor_msgs/JointState.h"
 #include <control_msgs/FollowJointTrajectoryFeedback.h>
 
+#include <aubo_msgs/JointMsg.h>
+#include <aubo_msgs/Vector3.h>
+#include <aubo_msgs/WayPoint.h>
+#include <aubo_msgs/ArmCmd.h>
+
 #include "otg/otgnewslib.h"
 
 #define MINIMUM_BUFFER_SIZE 300
@@ -40,11 +45,9 @@
 #define server_port 8899
 #define BIG_MODULE_RATIO 2 * M_PI / 60.0 / 121
 #define SMALL_MODULE_RATIO 2 * M_PI / 60.0 / 101
-#define VMAX 3000
-//#define AMAX 10000
-#define AMAX 10000
-//#define JMAX 40000
-#define JMAX 40000
+#define VMAX 500
+#define AMAX 1000
+#define JMAX 1000
 
 //#define LOG_INFO_DEBUG
 
@@ -116,8 +119,11 @@ namespace aubo_driver
             ServiceInterface robot_send_service_;      //send
             ServiceInterface robot_receive_service_;     //receive
 
+            bool stop_flag = false;
+            static bool collision_stopped_;
             RobotState rs;
 //            std::thread* mb_publish_thread_;
+            aubo_robot_namespace::ToolKinematicsParam tcp;
 
             std::queue<PlanningState>  buf_queue_;
             aubo_msgs::JointPos cur_pos;
@@ -129,8 +135,11 @@ namespace aubo_driver
             ros::Subscriber moveAPI_subs_;
             ros::Subscriber moveit_controller_subs_;
             ros::Subscriber trajectory_execution_subs_;
+            ros::Subscriber arm_cmd_subs_;
             ros::Subscriber robot_control_subs_;
             ros::Publisher io_pub_;
+            ros::Publisher joint_msgs_pub_;
+            ros::Publisher waypoint_pub_;
 
         private:
             void moveItPosCallback(const trajectory_msgs::JointTrajectoryPoint::ConstPtr &msg);
@@ -142,6 +151,8 @@ namespace aubo_driver
             bool setRobotJointsByMoveIt();
             void controllerSwitchCallback(const std_msgs::Int32::ConstPtr &msg);
             void publishIOMsg();
+            void armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg);
+            static void RealTimeRobotEventCallback(const aubo_robot_namespace::RobotEventInfo *pEventInfo, void *arg);
 
             bool reverse_connected_;
             double last_recieve_point_[ARM_DOF];   /** To avoid joining the same waypoint to the queue **/
@@ -178,6 +189,9 @@ namespace aubo_driver
             int collision_class_;
             std_msgs::Int32MultiArray rib_status_;
             industrial_msgs::RobotStatus robot_status_;
+
+            aubo_msgs::JointMsg joint_msg_;
+            aubo_msgs::WayPoint wayPoint_;
     };
 }
 

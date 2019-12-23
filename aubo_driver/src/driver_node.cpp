@@ -51,6 +51,7 @@ int main(int argc, char **argv)
     }
 
     ROS_INFO("aubo_driver/external_axis_number: %s", std::to_string(num).c_str());
+    ros::Publisher trajectory_execution_pub_ = n.advertise<std_msgs::String>("trajectory_execution_event", 100);
     AuboDriver robot_driver(num);
     robot_driver.run();
 
@@ -60,9 +61,22 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(robot_driver.UPDATE_RATE_);
     while(ros::ok())
     {
-        robot_driver.updateControlStatus();
-        loop_rate.sleep();
-        ros::spinOnce();
+      if (robot_driver.stop_flag)
+      {
+        robot_driver.robot_send_service_.robotMoveFastStop();
+
+        if (!robot_driver.buf_queue_.empty())
+        {
+            std_msgs::String msg;
+            msg.data = "stop";
+            trajectory_execution_pub_.publish(msg);
+        }
+
+        robot_driver.stop_flag = false;
+      }
+      robot_driver.updateControlStatus();
+      loop_rate.sleep();
+      ros::spinOnce();
     }
     ROS_WARN("Exiting robot_driver");
     return(0);

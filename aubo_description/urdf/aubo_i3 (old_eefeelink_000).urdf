@@ -5,7 +5,7 @@
   <joint name="world_joint" type="fixed">
     <parent link="world" />
     <child link ="mounter" />
-    <origin xyz="0.0 -0.658 0.0" rpy="0 0 0" />
+    <origin xyz="0.0 -0.658 0.0" rpy="0 0 0.02618" />
   </joint>
 
   <link name="mounter">
@@ -30,7 +30,7 @@
   <joint name="mounter_joint" type="fixed">
     <parent link="mounter" />
     <child link = "base_link" />
-    <origin xyz="0.0 0 0.0" rpy="3.14159 0.0 4.712389"/>
+    <origin xyz="0.0 0 0.0" rpy="3.14159 0.0 2.35621"/>
   </joint>
 
   <link name="base_link">
@@ -84,7 +84,7 @@
     <parent link="base_link" />
     <child link="shoulder_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.036873" upper="3.036873" effort="0" velocity="0" />
+    <limit lower="-3.1415926" upper="3.1415926" effort="0" velocity="0" />
   </joint>
 
   <link name="upperArm_Link">
@@ -146,7 +146,7 @@
     <parent link="upperArm_Link" />
     <child link="foreArm_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-0.035" upper="2.6179939" effort="0" velocity="0" />
+    <limit lower="-0.035" upper="3.1415926" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist1_Link">
@@ -208,7 +208,7 @@
     <parent link="wrist1_Link" />
     <child  link="wrist2_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.036873" upper="0.035" effort="0" velocity="0" />
+    <limit lower="-3.1415926" upper="0.035" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist3_Link">
@@ -240,7 +240,7 @@
     <child link="wrist3_Link" />
     <axis xyz="0 0 1" />
 <!--    <limit lower="-1.570796327" upper="3.1415926" effort="0" velocity="0" />-->
-    <limit lower="-2.0472" upper="2.618" effort="0" velocity="0" />
+    <limit lower="-1.0472" upper="2.618" effort="0" velocity="0" />
   </joint>
 
   <!-- modified line here -->
@@ -273,7 +273,7 @@
     </visual>
   </link>
   <joint name="vision_joint" type="fixed">
-      <origin xyz="0.108847 -0.030902 0.008042" rpy="-1.130905 0.171703 -0.317177"/>
+      <origin xyz="0.189326 -0.050356 -0.002892" rpy="-0.998538 0.194956 -0.289171"/>
     <parent link="ee_link"/>
     <child link="camera_link"/>
   </joint>
@@ -287,23 +287,9 @@
     </visual>
   </link>
   <joint name="eelink_finger_joint" type="fixed">
-      <origin xyz="0.181000 0.032720 0.086580" rpy="-1.047197533 0 0"/>
+      <origin xyz="0.200 0.024730 0.078580" rpy="-0.977384364 0 0"/>
     <parent link="ee_link"/>
     <child link="finger"/>
-  </joint>
-
-  <link name="finger_rub">
-    <visual>
-      <geometry>
-        <box size="0.005 0.005 0.005"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-  </link>
-  <joint name="eelink_finger_rub_joint" type="fixed">
-      <origin xyz="0.181000 0.025960 0.084050" rpy="-1.047197533 0 0"/>
-    <parent link="ee_link"/>
-    <child link="finger_rub"/>
   </joint>
 
   <link name="palm">
@@ -315,7 +301,7 @@
     </visual>
   </link>
   <joint name="eelink_palm_joint" type="fixed">
-      <origin xyz="0.173930 0.005870 0.059050" rpy="-1.047197533 0 0"/>
+      <origin xyz="0.211430 0.059050 -0.005870" rpy="-0.977384364 0 0"/>
     <parent link="ee_link"/>
     <child link="palm"/>
   </joint>
