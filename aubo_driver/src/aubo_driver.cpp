@@ -38,6 +38,7 @@
 namespace aubo_driver {
 
 std::string AuboDriver::joint_name_[ARM_DOF] = {"shoulder_joint","upperArm_joint","foreArm_joint","wrist1_joint","wrist2_joint","wrist3_joint"};
+bool AuboDriver::collision_stopped_ = false;
 
 AuboDriver::AuboDriver(int num = 0):buffer_size_(400),io_flag_delay_(0.02),data_recieved_(false),data_count_(0),real_robot_exist_(false),emergency_stopped_(false),protective_stopped_(false),normal_stopped_(false),
     controller_connected_flag_(false),start_move_(false),control_mode_ (aubo_driver::SendTargetGoal),rib_buffer_size_(0),jti(ARM_DOF,1.0/200),jto(ARM_DOF),collision_class_(8)
@@ -133,11 +134,21 @@ void AuboDriver::timerCallback(const ros::TimerEvent& e)
             if(real_robot_exist_)
             {
                 // publish robot_status information to the controller action server.
+                int32 error_code = 5000;
+                if (collision_stopped_)
+                    error_code = 5001;
+                else if (protective_stopped_)
+                    error_code = 5002;
+                else if (rs.robot_diagnosis_info_.singularityOverSpeedAlarm)
+                    error_code = 5003;
+
                 robot_status_.mode.val            = (int8)rs.robot_diagnosis_info_.orpeStatus;
                 robot_status_.e_stopped.val       = (int8)(rs.robot_diagnosis_info_.softEmergency || emergency_stopped_);
                 robot_status_.drives_powered.val  = (int8)rs.robot_diagnosis_info_.armPowerStatus;
                 robot_status_.motion_possible.val = (int)(!start_move_);
                 robot_status_.in_motion.val       = (int)start_move_;
+                robot_status_.in_error.val        = (int)(collision_stopped_ || protective_stopped_ || rs.robot_diagnosis_info_.singularityOverSpeedAlarm);
+                robot_status_.error_code          = error_code;
                 // publish joint_msg
                 joint_msg_.actual_current.clear();
                 joint_msg_.target_current.clear();
@@ -315,14 +326,23 @@ bool AuboDriver::setRobotJointsByMoveIt()
 
         if(controller_connected_flag_)      // actually no need this judgment
         {
-            if(emergency_stopped_)
+            // emergency_stopped_: The flag set in the driver after the emergency stop button is pressed
+            // normal_stopped_: The flag set by the driver after artificial stopping during the exercise
+            // collision_stopped_: After the robot arm collided and stopped, the flag set in the driver
+            // protective_stopped_: After the protection of the robot arm stops, the flag set in the driver
+            if (emergency_stopped_ || normal_stopped_ || collision_stopped_)
             {
+                //cancle.data will be set 0 in the aubo_robot_simulator.py when clear this one trajectory data
+                std_msgs::UInt8 cancle;
+                cancle.data = 1;
+                cancle_trajectory_pub_.publish(cancle);
+
                 //clear the buffer, there will be a jerk
                 start_move_ = false;
-                while(!buf_queue_.empty())
+                while (!buf_queue_.empty())
                     buf_queue_.pop();
             }
-            else if(protective_stopped_ || normal_stopped_)
+            else if(protective_stopped_)
             {
                 //cancle.data will be set 0 in the aubo_robot_simulator.py when clear this one trajectory data
 
@@ -351,8 +371,8 @@ bool AuboDriver::setRobotJointsByMoveIt()
                     buf_queue_.pop();
 
                 //clear the flag
-                if(normal_stopped_)
-                    normal_stopped_ = false;
+//                if(normal_stopped_)
+//                    normal_stopped_ = false;
             }
             else
             {
@@ -502,6 +522,21 @@ void AuboDriver::robotControlCallback(const std_msgs::String::ConstPtr &msg)
         }
         else
             ROS_ERROR("collision recover failed.");
+    }
+}
+
+void AuboDriver::RealTimeRobotEventCallback(const aubo_robot_namespace::RobotEventInfo *pEventInfo, void *arg)
+{
+    (void) arg;
+
+    switch (pEventInfo->eventType)
+    {
+    case aubo_robot_namespace::RobotEvent_collision:
+        collision_stopped_ = true;
+        break;
+
+    default:
+        break;
     }
 }
 

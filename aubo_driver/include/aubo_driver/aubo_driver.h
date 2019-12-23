@@ -119,6 +119,8 @@ namespace aubo_driver
             ServiceInterface robot_send_service_;      //send
             ServiceInterface robot_receive_service_;     //receive
 
+            bool stop_flag = false;
+            static bool collision_stopped_;
             RobotState rs;
 //            std::thread* mb_publish_thread_;
             aubo_robot_namespace::ToolKinematicsParam tcp;
@@ -149,6 +151,8 @@ namespace aubo_driver
             bool setRobotJointsByMoveIt();
             void controllerSwitchCallback(const std_msgs::Int32::ConstPtr &msg);
             void publishIOMsg();
+            void armCmdCallback(const aubo_msgs::ArmCmd::ConstPtr &msg);
+            static void RealTimeRobotEventCallback(const aubo_robot_namespace::RobotEventInfo *pEventInfo, void *arg);
 
             bool reverse_connected_;
             double last_recieve_point_[ARM_DOF];   /** To avoid joining the same waypoint to the queue **/
