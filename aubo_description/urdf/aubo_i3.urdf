@@ -1,6 +1,38 @@
 <?xml version="1.0"?>
 <robot name="aubo_i3">
 
+  <link name="world" />
+  <joint name="world_joint" type="fixed">
+    <parent link="world" />
+    <child link ="mounter" />
+    <origin xyz="0.0 -0.658 0.0" rpy="0 0 0" />
+  </joint>
+
+  <link name="mounter">
+    <visual>
+      <geometry>
+        <mesh filename="package://aubo_description/meshes/aubo_i3/collision/mounter_front_new.stl"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://aubo_description/meshes/aubo_i3/collision/mounter_front_new.stl"/>
+      </geometry>
+    </collision>
+    <!-- <inertial>
+      <mass value="0.1" />
+      <inertia ixx="0.00003" iyy="0.00003" izz="0.00003" ixy="0.0" ixz="0.0" iyz="0.0" />
+    </inertial> -->
+  </link>
+  <joint name="mounter_joint" type="fixed">
+    <parent link="mounter" />
+    <child link = "base_link" />
+    <origin xyz="0.0 0 0.0" rpy="3.14159 0.0 4.712389"/>
+  </joint>
+
   <link name="base_link">
     <inertial>
       <origin xyz="2.1698E-06 0.00017917 0.036984" rpy="0 1.5708 0" />
@@ -52,7 +84,7 @@
     <parent link="base_link" />
     <child link="shoulder_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.05" upper="3.05" effort="0" velocity="0" />
+    <limit lower="-3.036873" upper="3.036873" effort="0" velocity="0" />
   </joint>
 
   <link name="upperArm_Link">
@@ -83,7 +115,7 @@
     <parent link="shoulder_Link" />
     <child link="upperArm_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.05" upper="3.05" effort="0" velocity="0" />
+    <limit lower="-2.0944" upper="2.0944" effort="0" velocity="0" />
   </joint>
 
   <link name="foreArm_Link">
@@ -114,7 +146,7 @@
     <parent link="upperArm_Link" />
     <child link="foreArm_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.05" upper="3.05" effort="0" velocity="0" />
+    <limit lower="-0.035" upper="2.6179939" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist1_Link">
@@ -144,8 +176,8 @@
     <origin xyz="0.2565 0 0" rpy="3.1416 0 1.5708" />
     <parent link="foreArm_Link" />
     <child link="wrist1_Link" />
-    <axis xyz="0 0 -1" />
-    <limit lower="-3.05" upper="3.05" effort="0" velocity="0" />
+    <axis xyz="0 0 1" />
+    <limit lower="-1.3963" upper="1.3963" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist2_Link">
@@ -176,7 +208,7 @@
     <parent link="wrist1_Link" />
     <child  link="wrist2_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-3.05" upper="3.05" effort="0" velocity="0" />
+    <limit lower="-3.036873" upper="0.035" effort="0" velocity="0" />
   </joint>
 
   <link name="wrist3_Link">
@@ -206,15 +238,112 @@
     <origin xyz="0 -0.094 0" rpy="1.5708 0 0" />
     <parent link="wrist2_Link" />
     <child link="wrist3_Link" />
-    <axis xyz="0 0 -1" />
-    <limit lower="-3.05" upper="3.05" effort="0" velocity="0" />
+    <axis xyz="0 0 1" />
+<!--    <limit lower="-1.570796327" upper="3.1415926" effort="0" velocity="0" />-->
+    <limit lower="-2.0472" upper="2.618" effort="0" velocity="0" />
   </joint>
 
-  <link name="world" />
-
-  <joint name="world_joint" type="fixed">
-    <parent link="world" />
-    <child link = "base_link" />
-    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  <!-- modified line here -->
+  <link name="ee_link">
+      <visual>
+        <geometry>
+          <box size="0.005 0.005 0.005"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+      </visual>
+  </link>
+  <joint name="ee_fixed_joint" type="fixed">
+    <parent link="wrist3_Link" />
+    <child link = "ee_link" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -1.57079 0" />
   </joint>
+
+  <link name="tool0"/>
+  <joint name="wrist3_Link-tool0_fixed_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="-1.57079 0 0"/>
+    <parent link="wrist3_Link"/>
+    <child link="tool0"/>
+  </joint>
+  <link name="camera_link">
+    <visual>
+      <geometry>
+        <box size="0.005 0.005 0.005"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+  <joint name="vision_joint" type="fixed">
+      <origin xyz="0.108847 -0.030902 0.008042" rpy="-1.130905 0.171703 -0.317177"/>
+    <parent link="ee_link"/>
+    <child link="camera_link"/>
+  </joint>
+
+  <link name="finger">
+    <visual>
+      <geometry>
+        <box size="0.005 0.005 0.005"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+  <joint name="eelink_finger_joint" type="fixed">
+      <origin xyz="0.181000 0.032720 0.086580" rpy="-1.047197533 0 0"/>
+    <parent link="ee_link"/>
+    <child link="finger"/>
+  </joint>
+
+  <link name="finger_rub">
+    <visual>
+      <geometry>
+        <box size="0.005 0.005 0.005"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+  <joint name="eelink_finger_rub_joint" type="fixed">
+      <origin xyz="0.181000 0.025960 0.084050" rpy="-1.047197533 0 0"/>
+    <parent link="ee_link"/>
+    <child link="finger_rub"/>
+  </joint>
+
+  <link name="palm">
+    <visual>
+      <geometry>
+        <box size="0.005 0.005 0.005"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+  <joint name="eelink_palm_joint" type="fixed">
+      <origin xyz="0.173930 0.005870 0.059050" rpy="-1.047197533 0 0"/>
+    <parent link="ee_link"/>
+    <child link="palm"/>
+  </joint>
+
+  <link name="eef_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://aubo_description/meshes/aubo_i3/collision/eef_single.STL"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://aubo_description/meshes/aubo_i3/collision/eef_single.STL"/>
+      </geometry>
+    </collision>
+    <!-- <inertial>
+      <mass value="0.1" />
+      <inertia ixx="0.00003" iyy="0.00003" izz="0.00003" ixy="0.0" ixz="0.0" iyz="0.0" />
+    </inertial> -->
+  </link>
+  <joint name="eef_joint" type="fixed">
+    <parent link="ee_link" />
+    <child link = "eef_link" />
+    <!-- <origin xyz="0.0 0.0 0.0" rpy="-0.610865 0 0.0" /> -->
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0.0" />
+  </joint>
+
 </robot>
